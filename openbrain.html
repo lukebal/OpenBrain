@@ -1264,11 +1264,9 @@ async function mcpCall(toolName, args) {
       body: JSON.stringify(body)
     });
   } catch (networkErr) {
-    // CORS or network failure — give a clear message
     throw new Error(
-      'Could not reach Open Brain. ' +
-      'If opening from a local file, try hosting it on a simple server. ' +
-      'Error: ' + networkErr.message
+      'Network error — could not reach Supabase. Check your Supabase URL is correct. ' +
+      'Details: ' + networkErr.message
     );
   }
 
@@ -1335,8 +1333,10 @@ function saveConfig() {
 
 async function testConnection() {
   const statusEl = document.getElementById('configStatus');
+  const corsHelp = document.getElementById('corsHelp');
   statusEl.style.color = 'var(--text3)';
   statusEl.textContent = 'Testing...';
+  corsHelp.style.display = 'none';
 
   CFG.supabaseUrl  = document.getElementById('cfgSupabaseUrl').value.trim().replace(/\/$/, '');
   CFG.mcpKey       = document.getElementById('cfgMcpKey').value.trim();
@@ -1347,37 +1347,26 @@ async function testConnection() {
     return;
   }
 
-  // Step 1: Can we reach Supabase at all?
-  try {
-    const ping = await fetch(`${CFG.supabaseUrl}/functions/v1/open-brain-mcp`, {
-      method: 'OPTIONS',
-      headers: { 'Origin': location.href }
-    });
-    // OPTIONS succeeding means CORS is allowed
-  } catch(e) {
-    statusEl.style.color = 'var(--danger)';
-    statusEl.textContent = `✗ CORS blocked — see instructions below`;
-    document.getElementById('corsHelp').style.display = 'block';
-    toast('CORS issue detected — see Settings for fix', 'error');
-    return;
-  }
-
-  // Step 2: Authenticated call
   try {
     const stats = await mcpCall('thought_stats', {});
     const total = stats.total_thoughts || stats.total || 0;
     statusEl.style.color = 'var(--success)';
     statusEl.textContent = `✓ Connected — ${total} thoughts in your Open Brain`;
-    document.getElementById('corsHelp').style.display = 'none';
+    corsHelp.style.display = 'none';
     toast('Connection successful!', 'success');
     updateStatus();
   } catch(e) {
     statusEl.style.color = 'var(--danger)';
     statusEl.textContent = `✗ ${e.message}`;
-    if (e.message.includes('reach Open Brain') || e.message.includes('CORS')) {
-      document.getElementById('corsHelp').style.display = 'block';
+
+    // Only show CORS help if genuinely on a local file
+    if (location.protocol === 'file:') {
+      corsHelp.style.display = 'block';
+    } else {
+      // Show the actual error details instead
+      corsHelp.style.display = 'none';
     }
-    toast('Connection failed — check your settings', 'error');
+    toast('Connection failed: ' + e.message, 'error');
   }
 }
 
