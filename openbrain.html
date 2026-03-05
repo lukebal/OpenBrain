@@ -1,0 +1,1716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Open Brain — Knowledge Workbench</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@300;400;500&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #0c0c0f;
+    --surface:   #13131a;
+    --surface2:  #1a1a24;
+    --border:    #252535;
+    --border2:   #2e2e42;
+    --accent:    #7c6af7;
+    --accent2:   #a599ff;
+    --gold:      #e8c97a;
+    --text:      #e8e8f0;
+    --text2:     #9898b8;
+    --text3:     #5a5a78;
+    --success:   #5cb88a;
+    --danger:    #e06b6b;
+    --radius:    10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Ambient background */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -200px; left: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(124,106,247,0.06) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: -200px; right: -200px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(232,201,122,0.04) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── Layout ── */
+  .shell {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    grid-template-rows: 56px 1fr;
+    height: 100vh;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── Header ── */
+  .header {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(12,12,15,0.9);
+    backdrop-filter: blur(12px);
+    position: sticky; top: 0; z-index: 100;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo-mark {
+    width: 28px; height: 28px;
+    background: linear-gradient(135deg, var(--accent), var(--gold));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    box-shadow: 0 0 20px rgba(124,106,247,0.3);
+  }
+
+  .logo-text {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.02em;
+    color: var(--text);
+  }
+
+  .logo-text span {
+    color: var(--accent2);
+  }
+
+  .header-status {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .status-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--text3);
+    padding: 4px 10px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    transition: all 0.3s;
+  }
+
+  .status-pill.connected { color: var(--success); border-color: rgba(92,184,138,0.3); }
+  .status-pill.error { color: var(--danger); border-color: rgba(224,107,107,0.3); }
+
+  .status-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .thought-count {
+    font-family: 'Instrument Serif', serif;
+    font-size: 13px;
+    color: var(--text3);
+  }
+
+  .thought-count strong {
+    color: var(--gold);
+    font-style: italic;
+  }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    border-right: 1px solid var(--border);
+    padding: 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    overflow-y: auto;
+    background: var(--surface);
+  }
+
+  .sidebar-section {
+    padding: 0 12px;
+    margin-bottom: 8px;
+  }
+
+  .sidebar-label {
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text3);
+    padding: 0 8px;
+    margin-bottom: 4px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.15s;
+    color: var(--text2);
+    border: 1px solid transparent;
+    font-size: 12px;
+  }
+
+  .nav-item:hover {
+    background: var(--surface2);
+    color: var(--text);
+  }
+
+  .nav-item.active {
+    background: rgba(124,106,247,0.12);
+    color: var(--accent2);
+    border-color: rgba(124,106,247,0.2);
+  }
+
+  .nav-icon { font-size: 14px; width: 18px; text-align: center; }
+
+  .sidebar-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 8px 12px;
+  }
+
+  /* Config section at bottom of sidebar */
+  .sidebar-config {
+    margin-top: auto;
+    padding: 12px;
+    border-top: 1px solid var(--border);
+  }
+
+  .config-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    color: var(--text3);
+    font-size: 11px;
+    transition: all 0.15s;
+  }
+
+  .config-toggle:hover { color: var(--text2); background: var(--surface2); }
+
+  /* ── Main ── */
+  .main {
+    overflow-y: auto;
+    padding: 28px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  /* ── Panels ── */
+  .panel { display: none; flex-direction: column; gap: 20px; }
+  .panel.active { display: flex; }
+
+  .panel-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 26px;
+    font-style: italic;
+    color: var(--text);
+    line-height: 1.2;
+  }
+
+  .panel-title span { color: var(--accent2); }
+
+  .panel-sub {
+    font-size: 12px;
+    color: var(--text3);
+    margin-top: 2px;
+    font-style: normal;
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    transition: border-color 0.2s;
+  }
+
+  .card:hover { border-color: var(--border2); }
+
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── Form elements ── */
+  textarea, input[type="text"], input[type="password"], select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    padding: 12px 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    resize: vertical;
+  }
+
+  textarea:focus, input[type="text"]:focus, input[type="password"]:focus, select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(124,106,247,0.1);
+  }
+
+  textarea::placeholder, input::placeholder {
+    color: var(--text3);
+  }
+
+  select option { background: var(--surface2); }
+
+  /* ── Tags ── */
+  .tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  .tag {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.15s;
+    color: var(--text2);
+    background: var(--surface2);
+  }
+
+  .tag:hover { border-color: var(--accent); color: var(--accent2); }
+  .tag.selected { background: rgba(124,106,247,0.15); border-color: var(--accent); color: var(--accent2); }
+
+  /* ── Buttons ── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    letter-spacing: 0.02em;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), #9b8fff);
+    color: white;
+    box-shadow: 0 4px 16px rgba(124,106,247,0.3);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(124,106,247,0.4);
+  }
+
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text2);
+    border: 1px solid var(--border);
+  }
+
+  .btn-ghost:hover { background: var(--surface2); color: var(--text); border-color: var(--border2); }
+
+  .btn-gold {
+    background: linear-gradient(135deg, #c9a84c, var(--gold));
+    color: #1a1000;
+    box-shadow: 0 4px 16px rgba(232,201,122,0.25);
+  }
+
+  .btn-gold:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(232,201,122,0.35);
+  }
+
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
+
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  /* ── Toast ── */
+  .toast-container {
+    position: fixed;
+    top: 68px; right: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .toast {
+    padding: 12px 18px;
+    border-radius: var(--radius);
+    font-size: 12px;
+    max-width: 320px;
+    border: 1px solid;
+    backdrop-filter: blur(12px);
+    animation: slideIn 0.2s ease;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .toast.success {
+    background: rgba(92,184,138,0.12);
+    border-color: rgba(92,184,138,0.3);
+    color: var(--success);
+  }
+
+  .toast.error {
+    background: rgba(224,107,107,0.12);
+    border-color: rgba(224,107,107,0.3);
+    color: var(--danger);
+  }
+
+  .toast.info {
+    background: rgba(124,106,247,0.12);
+    border-color: rgba(124,106,247,0.3);
+    color: var(--accent2);
+  }
+
+  @keyframes slideIn {
+    from { transform: translateX(20px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+
+  /* ── Search results ── */
+  .results-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  .result-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    transition: all 0.2s;
+    cursor: default;
+  }
+
+  .result-card:hover {
+    border-color: var(--border2);
+    transform: translateX(2px);
+  }
+
+  .result-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+
+  .result-type {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: rgba(124,106,247,0.15);
+    color: var(--accent2);
+    border: 1px solid rgba(124,106,247,0.2);
+    font-weight: 500;
+  }
+
+  .result-date {
+    font-size: 10px;
+    color: var(--text3);
+  }
+
+  .result-score {
+    font-size: 10px;
+    color: var(--gold);
+    margin-left: auto;
+  }
+
+  .result-content {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .result-topics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 10px;
+  }
+
+  .result-topic {
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 10px;
+    background: var(--surface);
+    color: var(--text3);
+    border: 1px solid var(--border);
+  }
+
+  /* ── Stats grid ── */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+  }
+
+  .stat-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    text-align: center;
+  }
+
+  .stat-value {
+    font-family: 'Instrument Serif', serif;
+    font-size: 32px;
+    font-style: italic;
+    color: var(--accent2);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-label {
+    font-size: 10px;
+    color: var(--text3);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* ── Recent thoughts list ── */
+  .thought-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .thought-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: all 0.15s;
+  }
+
+  .thought-item:hover { border-color: var(--border2); }
+
+  .thought-bullet {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    margin-top: 5px;
+    flex-shrink: 0;
+  }
+
+  .thought-text {
+    flex: 1;
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  .thought-meta-small {
+    font-size: 10px;
+    color: var(--text3);
+    margin-top: 4px;
+  }
+
+  /* ── Chunk preview ── */
+  .chunk-preview {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .chunk-item {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 11px;
+    color: var(--text2);
+    line-height: 1.5;
+  }
+
+  .chunk-num {
+    font-size: 9px;
+    color: var(--text3);
+    margin-bottom: 4px;
+    font-weight: 500;
+  }
+
+  /* ── Loading ── */
+  .spinner {
+    display: inline-block;
+    width: 14px; height: 14px;
+    border: 2px solid rgba(255,255,255,0.2);
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Empty state ── */
+  .empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text3);
+  }
+
+  .empty-icon { font-size: 32px; margin-bottom: 10px; opacity: 0.5; }
+  .empty-text { font-size: 13px; }
+
+  /* ── Config panel ── */
+  .config-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .field-label {
+    font-size: 11px;
+    color: var(--text2);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .field-hint {
+    font-size: 10px;
+    color: var(--text3);
+    margin-top: 5px;
+  }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 10px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text3); }
+
+  /* ── Progress bar ── */
+  .progress-bar {
+    height: 3px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--gold));
+    border-radius: 3px;
+    transition: width 0.3s;
+  }
+
+  /* ── Workflow cards ── */
+  .workflow-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+  }
+
+  .workflow-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .workflow-card:hover {
+    border-color: var(--accent);
+    background: rgba(124,106,247,0.05);
+  }
+
+  .workflow-icon { font-size: 20px; margin-bottom: 8px; }
+  .workflow-title { font-size: 12px; font-weight: 500; color: var(--text); margin-bottom: 4px; font-family: 'Syne', sans-serif; }
+  .workflow-desc { font-size: 11px; color: var(--text3); line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">
+      <div class="logo-mark">🧠</div>
+      <div class="logo-text">Open<span>Brain</span></div>
+    </div>
+    <div class="header-status">
+      <div class="thought-count" id="headerCount">—</div>
+      <div class="status-pill" id="statusPill">
+        <div class="status-dot"></div>
+        <span id="statusText">not configured</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Workspace</div>
+      <div class="nav-item active" data-panel="capture" onclick="switchPanel('capture', this)">
+        <span class="nav-icon">✦</span> Capture
+      </div>
+      <div class="nav-item" data-panel="search" onclick="switchPanel('search', this)">
+        <span class="nav-icon">◎</span> Search
+      </div>
+      <div class="nav-item" data-panel="recent" onclick="switchPanel('recent', this)">
+        <span class="nav-icon">◈</span> Recent
+      </div>
+    </div>
+
+    <div class="sidebar-divider"></div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Tools</div>
+      <div class="nav-item" data-panel="ingest" onclick="switchPanel('ingest', this)">
+        <span class="nav-icon">⇥</span> Ingest Doc
+      </div>
+      <div class="nav-item" data-panel="workflows" onclick="switchPanel('workflows', this)">
+        <span class="nav-icon">◆</span> Workflows
+      </div>
+      <div class="nav-item" data-panel="stats" onclick="switchPanel('stats', this)">
+        <span class="nav-icon">◉</span> Stats
+      </div>
+    </div>
+
+    <div class="sidebar-config">
+      <div class="config-toggle" onclick="switchPanel('config', document.querySelector('[data-panel=config]'))">
+        ⚙ Settings
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- ── CAPTURE ── -->
+    <div class="panel active" id="panel-capture">
+      <div>
+        <div class="panel-title">Capture a <span>thought</span></div>
+        <div class="panel-sub">Distilled signal from Copilot, meetings, or your own thinking</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Content</div>
+        <textarea id="captureText" rows="6" placeholder="Paste the distilled insight, decision, or context here...&#10;&#10;Tip: paste Copilot's summary output directly — one atomic idea per capture."></textarea>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Metadata</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div>
+            <div class="field-label">Type</div>
+            <select id="captureType">
+              <option value="">— auto detect —</option>
+              <option value="observation">Observation</option>
+              <option value="decision">Decision</option>
+              <option value="task">Task / Action Item</option>
+              <option value="idea">Idea</option>
+              <option value="person_note">Person Note</option>
+              <option value="reference">Reference</option>
+              <option value="meeting_summary">Meeting Summary</option>
+            </select>
+          </div>
+          <div>
+            <div class="field-label">Project / Topic</div>
+            <input type="text" id="captureProject" placeholder="e.g. Q3 Planning, Sarah, FIDO2">
+          </div>
+        </div>
+
+        <div style="margin-top:12px;">
+          <div class="field-label">Quick tags</div>
+          <div class="tag-row" id="quickTags">
+            <div class="tag" onclick="toggleTag(this)">decision</div>
+            <div class="tag" onclick="toggleTag(this)">action-item</div>
+            <div class="tag" onclick="toggleTag(this)">relationship</div>
+            <div class="tag" onclick="toggleTag(this)">risk</div>
+            <div class="tag" onclick="toggleTag(this)">insight</div>
+            <div class="tag" onclick="toggleTag(this)">open-question</div>
+            <div class="tag" onclick="toggleTag(this)">follow-up</div>
+            <div class="tag" onclick="toggleTag(this)">from-copilot</div>
+            <div class="tag" onclick="toggleTag(this)">meeting</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="captureThought()">
+          <span>✦</span> Capture to Open Brain
+        </button>
+        <button class="btn btn-ghost" onclick="clearCapture()">Clear</button>
+        <div id="captureStatus" style="font-size:11px; color:var(--text3); margin-left:4px;"></div>
+      </div>
+    </div>
+
+    <!-- ── SEARCH ── -->
+    <div class="panel" id="panel-search">
+      <div>
+        <div class="panel-title">Search your <span>brain</span></div>
+        <div class="panel-sub">Semantic search — finds meaning, not just keywords</div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex; gap:10px; align-items:flex-start;">
+          <textarea id="searchQuery" rows="2" placeholder="Ask anything... e.g. 'what did we decide about the Q3 roadmap?' or 'Sarah's concerns about the project'" style="resize:none;"></textarea>
+          <button class="btn btn-primary" onclick="searchBrain()" style="flex-shrink:0; height:fit-content;">
+            <span>◎</span> Search
+          </button>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:12px; align-items:center; flex-wrap:wrap;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="field-label" style="margin:0;">Results</span>
+            <select id="searchLimit" style="width:70px; padding:6px 10px;">
+              <option value="5">5</option>
+              <option value="10" selected>10</option>
+              <option value="20">20</option>
+            </select>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="field-label" style="margin:0;">Threshold</span>
+            <select id="searchThreshold" style="width:80px; padding:6px 10px;">
+              <option value="0.3">0.3 broad</option>
+              <option value="0.5" selected>0.5 mid</option>
+              <option value="0.7">0.7 precise</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div id="searchResults">
+        <div class="empty">
+          <div class="empty-icon">◎</div>
+          <div class="empty-text">Enter a query to search your Open Brain</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── RECENT ── -->
+    <div class="panel" id="panel-recent">
+      <div>
+        <div class="panel-title">Recent <span>thoughts</span></div>
+        <div class="panel-sub">What's been captured lately</div>
+      </div>
+
+      <div style="display:flex; gap:10px; align-items:center;">
+        <select id="recentDays" style="width:130px; padding:8px 12px;">
+          <option value="1">Today</option>
+          <option value="7" selected>Last 7 days</option>
+          <option value="30">Last 30 days</option>
+          <option value="">All time</option>
+        </select>
+        <select id="recentType" style="width:160px; padding:8px 12px;">
+          <option value="">All types</option>
+          <option value="observation">Observations</option>
+          <option value="decision">Decisions</option>
+          <option value="task">Tasks</option>
+          <option value="idea">Ideas</option>
+          <option value="person_note">Person Notes</option>
+          <option value="meeting_summary">Meeting Summaries</option>
+        </select>
+        <button class="btn btn-ghost" onclick="loadRecent()" style="padding:8px 14px;">↻ Refresh</button>
+      </div>
+
+      <div id="recentResults">
+        <div class="empty">
+          <div class="empty-icon">◈</div>
+          <div class="empty-text">Click refresh to load recent thoughts</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── INGEST DOC ── -->
+    <div class="panel" id="panel-ingest">
+      <div>
+        <div class="panel-title">Ingest a <span>document</span></div>
+        <div class="panel-sub">Paste transcript, email, Confluence page, or Copilot output — chunks and stores it</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Document Content</div>
+        <textarea id="ingestText" rows="10" placeholder="Paste your document here — meeting transcript, email thread, Copilot summary, article, etc.&#10;&#10;This will be chunked into atomic pieces and stored in your Open Brain for future semantic search."></textarea>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Document Metadata</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div>
+            <div class="field-label">Source type</div>
+            <select id="ingestSource">
+              <option value="meeting_transcript">Meeting Transcript</option>
+              <option value="email">Email Thread</option>
+              <option value="confluence">Confluence / Wiki Page</option>
+              <option value="copilot_output">Copilot Output</option>
+              <option value="document">Document / Report</option>
+              <option value="notes">Notes</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div>
+            <div class="field-label">Project / Context</div>
+            <input type="text" id="ingestProject" placeholder="e.g. Q3 Planning, Product Review">
+          </div>
+        </div>
+        <div style="margin-top:12px;">
+          <div class="field-label">Chunk size <span style="color:var(--text3);">(words per chunk)</span></div>
+          <select id="chunkSize" style="width:160px;">
+            <option value="100">100 — very atomic</option>
+            <option value="200" selected>200 — recommended</option>
+            <option value="400">400 — larger context</option>
+          </select>
+          <div class="field-hint">Smaller chunks = more precise search. Larger = more context per result.</div>
+        </div>
+      </div>
+
+      <div id="chunkPreviewArea" style="display:none;">
+        <div class="card">
+          <div class="card-title">Preview chunks</div>
+          <div class="chunk-preview" id="chunkPreview"></div>
+          <div class="progress-bar" id="ingestProgress" style="display:none;">
+            <div class="progress-fill" id="ingestProgressFill" style="width:0%"></div>
+          </div>
+          <div id="ingestProgressText" style="font-size:11px; color:var(--text3); margin-top:6px;"></div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="previewChunks()">Preview chunks</button>
+        <button class="btn btn-gold" onclick="ingestDocument()" id="ingestBtn">
+          <span>⇥</span> Ingest to Open Brain
+        </button>
+      </div>
+    </div>
+
+    <!-- ── WORKFLOWS ── -->
+    <div class="panel" id="panel-workflows">
+      <div>
+        <div class="panel-title">Copilot → Open Brain <span>workflows</span></div>
+        <div class="panel-sub">Templates for your daily knowledge capture patterns</div>
+      </div>
+
+      <div class="workflow-grid">
+        <div class="workflow-card" onclick="loadWorkflow('eod')">
+          <div class="workflow-icon">🌙</div>
+          <div class="workflow-title">End of Day Distillation</div>
+          <div class="workflow-desc">Prompt template to extract today's signal from Copilot</div>
+        </div>
+        <div class="workflow-card" onclick="loadWorkflow('transcript')">
+          <div class="workflow-icon">🎙️</div>
+          <div class="workflow-title">Meeting Transcript</div>
+          <div class="workflow-desc">Extract decisions, actions, and open questions</div>
+        </div>
+        <div class="workflow-card" onclick="loadWorkflow('weekly')">
+          <div class="workflow-icon">📅</div>
+          <div class="workflow-title">Weekly Synthesis</div>
+          <div class="workflow-desc">Find themes and relationships across the week</div>
+        </div>
+        <div class="workflow-card" onclick="loadWorkflow('confluence')">
+          <div class="workflow-icon">📄</div>
+          <div class="workflow-title">Confluence / Email</div>
+          <div class="workflow-desc">Distill reference material into reusable context</div>
+        </div>
+        <div class="workflow-card" onclick="loadWorkflow('premeeting')">
+          <div class="workflow-icon">🎯</div>
+          <div class="workflow-title">Pre-Meeting Brief</div>
+          <div class="workflow-desc">Search Open Brain, prep Copilot with context</div>
+        </div>
+        <div class="workflow-card" onclick="loadWorkflow('docfactory')">
+          <div class="workflow-icon">📝</div>
+          <div class="workflow-title">Document Factory</div>
+          <div class="workflow-desc">Generate formatted output, capture the signal</div>
+        </div>
+      </div>
+
+      <div class="card" id="workflowDetail" style="display:none;">
+        <div class="card-title" id="workflowDetailTitle">Workflow</div>
+        <div id="workflowDetailContent" style="color:var(--text2); font-size:13px; line-height:1.7;"></div>
+        <div style="margin-top:14px;">
+          <button class="btn btn-ghost" onclick="copyWorkflow()">⎘ Copy prompt for Copilot</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── STATS ── -->
+    <div class="panel" id="panel-stats">
+      <div>
+        <div class="panel-title">Brain <span>stats</span></div>
+        <div class="panel-sub">What's in your Open Brain</div>
+      </div>
+
+      <div class="stats-grid" id="statsGrid">
+        <div class="stat-card">
+          <div class="stat-value" id="statTotal">—</div>
+          <div class="stat-label">Total Thoughts</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="statObs">—</div>
+          <div class="stat-label">Observations</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="statDecisions">—</div>
+          <div class="stat-label">Decisions</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="statIdeas">—</div>
+          <div class="stat-label">Ideas</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Top Topics</div>
+        <div id="statsTopics" class="tag-row" style="margin-top:0;">
+          <div class="empty" style="padding:20px 0; width:100%;">
+            <div class="empty-text">Load stats to see top topics</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">People Mentioned</div>
+        <div id="statsPeople" class="tag-row" style="margin-top:0;">
+          <div class="empty" style="padding:20px 0; width:100%;">
+            <div class="empty-text">Load stats to see people</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-ghost" onclick="loadStats()">↻ Refresh Stats</button>
+    </div>
+
+    <!-- ── CONFIG ── -->
+    <div class="panel" id="panel-config">
+      <div>
+        <div class="panel-title">Settings</div>
+        <div class="panel-sub">Configure your Open Brain connection</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Open Brain Connection</div>
+        <div class="config-grid">
+          <div>
+            <div class="field-label">Supabase URL</div>
+            <input type="text" id="cfgSupabaseUrl" placeholder="https://yourproject.supabase.co">
+            <div class="field-hint">Found in your Supabase project dashboard</div>
+          </div>
+          <div>
+            <div class="field-label">MCP Access Key</div>
+            <input type="password" id="cfgMcpKey" placeholder="Your Open Brain access key">
+            <div class="field-hint">The key after ?key= in your MCP connector URL</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Anthropic API <span style="color:var(--text3); font-size:10px; text-transform:none; letter-spacing:0;">(optional — only needed for AI analysis features)</span></div>
+        <div>
+          <div class="field-label">API Key</div>
+          <input type="password" id="cfgAnthropicKey" placeholder="sk-ant-...">
+          <div class="field-hint">From console.anthropic.com — only used for analysis, not for capture/search</div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="saveConfig()">Save Configuration</button>
+        <button class="btn btn-ghost" onclick="testConnection()">Test Connection</button>
+      </div>
+
+      <div id="configStatus" style="font-size:12px; color:var(--text3);"></div>
+
+      <div id="corsHelp" style="display:none;" class="card" style="border-color:rgba(232,201,122,0.3);">
+        <div class="card-title" style="color:var(--gold);">⚠ CORS Fix Required</div>
+        <div style="font-size:12px; color:var(--text2); line-height:1.8;">
+          Your browser is blocking requests because this file is opened locally (<code style="color:var(--accent2);">file://</code>).<br><br>
+          <strong style="color:var(--text);">Fix — run a one-line local server:</strong><br><br>
+          <strong style="color:var(--text3);">Option A — Python (easiest):</strong><br>
+          1. Open Terminal / Command Prompt<br>
+          2. Navigate to the folder with this file:<br>
+          <code style="background:var(--surface2); padding:4px 8px; border-radius:4px; display:inline-block; margin:4px 0;">cd Desktop</code><br>
+          3. Run:<br>
+          <code style="background:var(--surface2); padding:4px 8px; border-radius:4px; display:inline-block; margin:4px 0;">python -m http.server 8080</code><br>
+          4. Open Chrome and go to: <code style="color:var(--accent2);">http://localhost:8080/openbrain.html</code><br><br>
+          <strong style="color:var(--text3);">Option B — if Python isn't available:</strong><br>
+          Search for "Live Server" in VS Code extensions and use that to serve the file.<br><br>
+          <span style="color:var(--text3);">Once opened via localhost, the connection will work.</span>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Toasts -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ── Config ────────────────────────────────────────────────────────────────────
+let CFG = {
+  supabaseUrl: localStorage.getItem('ob_supabase_url') || '',
+  mcpKey:      localStorage.getItem('ob_mcp_key') || '',
+  anthropicKey: localStorage.getItem('ob_anthropic_key') || '',
+};
+
+const WORKFLOWS = {
+  eod: {
+    title: 'End of Day Distillation',
+    prompt: `Review everything we worked through today and give me exactly 5-10 atomic insights, decisions, or things I should remember long-term.
+
+Format each as a single clear sentence starting with the category:
+DECISION: ...
+INSIGHT: ...
+ACTION: ...
+CONTEXT: ...
+RELATIONSHIP: ...
+
+Ignore process steps and raw data. Only include things that would be valuable in 6 months.`
+  },
+  transcript: {
+    title: 'Meeting Transcript → Signal',
+    prompt: `I'm going to paste a meeting transcript. Extract only the high-signal content:
+
+1. DECISIONS MADE (with rationale if mentioned)
+2. ACTION ITEMS (person + task + deadline if known)
+3. OPEN QUESTIONS (unresolved, needs follow-up)
+4. KEY RELATIONSHIPS (connections between topics, people, or projects mentioned)
+5. CONTEXT FOR FUTURE (things that will matter in future meetings)
+
+Ignore pleasantries, repetition, and filler. One line per item. Be ruthlessly concise.`
+  },
+  weekly: {
+    title: 'Weekly Synthesis',
+    prompt: `I'm going to paste notes/summaries from this week. Analyze them and tell me:
+
+1. RECURRING THEMES — what topics kept coming up?
+2. UNRESOLVED TENSIONS — what problems aren't resolved yet?
+3. UNEXPECTED CONNECTIONS — what ideas from different areas are actually related?
+4. BLIND SPOTS — what am I not thinking about that I should be?
+5. TOP 3 THINGS TO REMEMBER — most important signal from this week
+
+Be specific. Reference the actual content, not generalities.`
+  },
+  confluence: {
+    title: 'Confluence / Email → Reusable Context',
+    prompt: `I'm going to paste a document (Confluence page, email thread, or report). 
+
+Summarize it as context I'll need to reference in future meetings or conversations. Focus on:
+- Key facts and positions
+- Open decisions or debates
+- Who owns what
+- What's already been tried or decided
+- What the "current state" is
+
+Write it as a briefing I could read in 60 seconds before a meeting. Avoid jargon, be direct.`
+  },
+  premeeting: {
+    title: 'Pre-Meeting Brief (use with Open Brain search)',
+    prompt: `Step 1: Search your Open Brain for the meeting topic using the Search panel.
+Step 2: Copy the relevant results.
+Step 3: Paste them into Copilot with this prompt:
+
+---
+Here is context from my knowledge base about [TOPIC]:
+
+[PASTE OPEN BRAIN RESULTS HERE]
+
+Based on this context:
+1. What are the key things I should know going into this meeting?
+2. What gaps exist in my knowledge that I should ask about?
+3. What decisions or commitments have I already made that are relevant?
+4. What's the most important question I should ask?`
+  },
+  docfactory: {
+    title: 'Document Factory → Capture Signal',
+    prompt: `After generating any document in Copilot, run this follow-up prompt:
+
+---
+Now strip away the document formatting and give me just 3-5 things from this that I should remember in 6 months. 
+
+Format as:
+REMEMBER: [one sentence]
+REMEMBER: [one sentence]
+...
+
+These should be the "permanent memory" version — the signal that would still be valuable long after this specific document is forgotten.`
+  }
+};
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+window.addEventListener('load', () => {
+  loadConfigIntoForm();
+  if (CFG.supabaseUrl && CFG.mcpKey) {
+    updateStatus();
+  }
+});
+
+function loadConfigIntoForm() {
+  document.getElementById('cfgSupabaseUrl').value = CFG.supabaseUrl;
+  document.getElementById('cfgMcpKey').value = CFG.mcpKey;
+  document.getElementById('cfgAnthropicKey').value = CFG.anthropicKey;
+}
+
+// ── Navigation ────────────────────────────────────────────────────────────────
+function switchPanel(name, el) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  if (el && el.classList) el.classList.add('active');
+
+  if (name === 'stats') loadStats();
+  if (name === 'recent') loadRecent();
+}
+
+// ── MCP API call ──────────────────────────────────────────────────────────────
+async function mcpCall(toolName, args) {
+  if (!CFG.supabaseUrl || !CFG.mcpKey) {
+    throw new Error('Not configured — go to Settings first');
+  }
+
+  const url = `${CFG.supabaseUrl}/functions/v1/open-brain-mcp?key=${CFG.mcpKey}`;
+
+  // JSON-RPC 2.0 format — what MCP servers actually expect
+  const body = {
+    jsonrpc: '2.0',
+    id: Date.now(),
+    method: 'tools/call',
+    params: { name: toolName, arguments: args }
+  };
+
+  let res;
+  try {
+    res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify(body)
+    });
+  } catch (networkErr) {
+    // CORS or network failure — give a clear message
+    throw new Error(
+      'Could not reach Open Brain. ' +
+      'If opening from a local file, try hosting it on a simple server. ' +
+      'Error: ' + networkErr.message
+    );
+  }
+
+  if (!res.ok) {
+    const err = await res.text().catch(() => res.statusText);
+    throw new Error(`API error ${res.status}: ${err}`);
+  }
+
+  const data = await res.json();
+
+  // Handle JSON-RPC response envelope
+  if (data.result) {
+    const result = data.result;
+    if (result.content && result.content[0]) {
+      const text = result.content[0].text;
+      try { return JSON.parse(text); } catch { return text; }
+    }
+    return result;
+  }
+
+  // Handle direct MCP response (no envelope)
+  if (data.content && data.content[0]) {
+    const text = data.content[0].text;
+    try { return JSON.parse(text); } catch { return text; }
+  }
+
+  if (data.error) {
+    throw new Error(data.error.message || JSON.stringify(data.error));
+  }
+
+  return data;
+}
+
+// ── Status ────────────────────────────────────────────────────────────────────
+async function updateStatus() {
+  const pill = document.getElementById('statusPill');
+  const txt  = document.getElementById('statusText');
+  const cnt  = document.getElementById('headerCount');
+  try {
+    const stats = await mcpCall('thought_stats', {});
+    pill.className = 'status-pill connected';
+    txt.textContent = 'connected';
+    const total = stats.total_thoughts || stats.total || 0;
+    cnt.innerHTML = `<strong>${total}</strong> thoughts`;
+    document.getElementById('statTotal').textContent = total;
+  } catch(e) {
+    pill.className = 'status-pill error';
+    txt.textContent = 'disconnected';
+    cnt.textContent = '—';
+  }
+}
+
+// ── Config ────────────────────────────────────────────────────────────────────
+function saveConfig() {
+  CFG.supabaseUrl   = document.getElementById('cfgSupabaseUrl').value.trim().replace(/\/$/, '');
+  CFG.mcpKey        = document.getElementById('cfgMcpKey').value.trim();
+  CFG.anthropicKey  = document.getElementById('cfgAnthropicKey').value.trim();
+  localStorage.setItem('ob_supabase_url', CFG.supabaseUrl);
+  localStorage.setItem('ob_mcp_key', CFG.mcpKey);
+  localStorage.setItem('ob_anthropic_key', CFG.anthropicKey);
+  toast('Configuration saved', 'success');
+  updateStatus();
+}
+
+async function testConnection() {
+  const statusEl = document.getElementById('configStatus');
+  statusEl.style.color = 'var(--text3)';
+  statusEl.textContent = 'Testing...';
+
+  CFG.supabaseUrl  = document.getElementById('cfgSupabaseUrl').value.trim().replace(/\/$/, '');
+  CFG.mcpKey       = document.getElementById('cfgMcpKey').value.trim();
+
+  if (!CFG.supabaseUrl || !CFG.mcpKey) {
+    statusEl.style.color = 'var(--danger)';
+    statusEl.textContent = '✗ Please fill in both Supabase URL and Access Key';
+    return;
+  }
+
+  // Step 1: Can we reach Supabase at all?
+  try {
+    const ping = await fetch(`${CFG.supabaseUrl}/functions/v1/open-brain-mcp`, {
+      method: 'OPTIONS',
+      headers: { 'Origin': location.href }
+    });
+    // OPTIONS succeeding means CORS is allowed
+  } catch(e) {
+    statusEl.style.color = 'var(--danger)';
+    statusEl.textContent = `✗ CORS blocked — see instructions below`;
+    document.getElementById('corsHelp').style.display = 'block';
+    toast('CORS issue detected — see Settings for fix', 'error');
+    return;
+  }
+
+  // Step 2: Authenticated call
+  try {
+    const stats = await mcpCall('thought_stats', {});
+    const total = stats.total_thoughts || stats.total || 0;
+    statusEl.style.color = 'var(--success)';
+    statusEl.textContent = `✓ Connected — ${total} thoughts in your Open Brain`;
+    document.getElementById('corsHelp').style.display = 'none';
+    toast('Connection successful!', 'success');
+    updateStatus();
+  } catch(e) {
+    statusEl.style.color = 'var(--danger)';
+    statusEl.textContent = `✗ ${e.message}`;
+    if (e.message.includes('reach Open Brain') || e.message.includes('CORS')) {
+      document.getElementById('corsHelp').style.display = 'block';
+    }
+    toast('Connection failed — check your settings', 'error');
+  }
+}
+
+// ── Capture ───────────────────────────────────────────────────────────────────
+function toggleTag(el) { el.classList.toggle('selected'); }
+function clearCapture() {
+  document.getElementById('captureText').value = '';
+  document.getElementById('captureProject').value = '';
+  document.getElementById('captureType').value = '';
+  document.querySelectorAll('#quickTags .tag').forEach(t => t.classList.remove('selected'));
+}
+
+async function captureThought() {
+  const content = document.getElementById('captureText').value.trim();
+  if (!content) { toast('Nothing to capture — add some content first', 'error'); return; }
+
+  const type    = document.getElementById('captureType').value;
+  const project = document.getElementById('captureProject').value.trim();
+  const tags    = [...document.querySelectorAll('#quickTags .tag.selected')].map(t => t.textContent);
+
+  let fullContent = content;
+  if (project) fullContent += `\n\n[project: ${project}]`;
+  if (tags.length) fullContent += `\n[tags: ${tags.join(', ')}]`;
+  if (type) fullContent += `\n[type: ${type}]`;
+
+  const btn = document.querySelector('#panel-capture .btn-primary');
+  const statusEl = document.getElementById('captureStatus');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Capturing...';
+  statusEl.textContent = '';
+
+  try {
+    await mcpCall('capture_thought', { content: fullContent });
+    toast('Thought captured ✦', 'success');
+    clearCapture();
+    updateStatus();
+  } catch(e) {
+    toast(e.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<span>✦</span> Capture to Open Brain';
+  }
+}
+
+// ── Search ────────────────────────────────────────────────────────────────────
+async function searchBrain() {
+  const query = document.getElementById('searchQuery').value.trim();
+  if (!query) return;
+
+  const limit     = parseInt(document.getElementById('searchLimit').value);
+  const threshold = parseFloat(document.getElementById('searchThreshold').value);
+  const container = document.getElementById('searchResults');
+
+  container.innerHTML = `<div class="empty"><div class="spinner" style="width:24px;height:24px;border-width:3px;"></div></div>`;
+
+  try {
+    const results = await mcpCall('search_thoughts', { query, limit, threshold });
+    renderSearchResults(results, container);
+  } catch(e) {
+    container.innerHTML = `<div class="empty"><div class="empty-text" style="color:var(--danger);">Error: ${e.message}</div></div>`;
+  }
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && e.metaKey && document.getElementById('panel-search').classList.contains('active')) {
+    searchBrain();
+  }
+});
+
+function renderSearchResults(data, container) {
+  let thoughts = [];
+  if (Array.isArray(data)) thoughts = data;
+  else if (data && data.thoughts) thoughts = data.thoughts;
+  else if (data && data.results) thoughts = data.results;
+  else if (typeof data === 'string') {
+    try { const p = JSON.parse(data); thoughts = Array.isArray(p) ? p : p.thoughts || []; } catch {}
+  }
+
+  if (!thoughts.length) {
+    container.innerHTML = `<div class="empty"><div class="empty-icon">◎</div><div class="empty-text">No results found — try a broader query or lower threshold</div></div>`;
+    return;
+  }
+
+  container.innerHTML = `<div style="font-size:11px;color:var(--text3);margin-bottom:8px;">${thoughts.length} result${thoughts.length>1?'s':''} found</div><div class="results-list"></div>`;
+  const list = container.querySelector('.results-list');
+
+  thoughts.forEach(t => {
+    const meta = t.metadata || {};
+    const type = meta.type || t.type || '';
+    const topics = meta.topics || [];
+    const date = t.created_at ? new Date(t.created_at).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'}) : '';
+    const score = t.similarity ? `${Math.round(t.similarity * 100)}% match` : '';
+
+    const card = document.createElement('div');
+    card.className = 'result-card';
+    card.innerHTML = `
+      <div class="result-meta">
+        ${type ? `<span class="result-type">${type}</span>` : ''}
+        ${date ? `<span class="result-date">${date}</span>` : ''}
+        ${score ? `<span class="result-score">${score}</span>` : ''}
+      </div>
+      <div class="result-content">${escHtml(t.content || '')}</div>
+      ${topics.length ? `<div class="result-topics">${topics.map(tp => `<span class="result-topic">${escHtml(tp)}</span>`).join('')}</div>` : ''}
+    `;
+    list.appendChild(card);
+  });
+}
+
+// ── Recent ────────────────────────────────────────────────────────────────────
+async function loadRecent() {
+  const days    = document.getElementById('recentDays').value;
+  const type    = document.getElementById('recentType').value;
+  const container = document.getElementById('recentResults');
+
+  container.innerHTML = `<div class="empty"><div class="spinner" style="width:24px;height:24px;border-width:3px;"></div></div>`;
+
+  const args = { limit: 30 };
+  if (days) args.days = parseInt(days);
+  if (type) args.type = type;
+
+  try {
+    const results = await mcpCall('list_thoughts', args);
+    renderRecentResults(results, container);
+  } catch(e) {
+    container.innerHTML = `<div class="empty"><div class="empty-text" style="color:var(--danger);">Error: ${e.message}</div></div>`;
+  }
+}
+
+function renderRecentResults(data, container) {
+  let thoughts = [];
+  if (Array.isArray(data)) thoughts = data;
+  else if (data && data.thoughts) thoughts = data.thoughts;
+  else if (typeof data === 'string') {
+    try { const p = JSON.parse(data); thoughts = Array.isArray(p) ? p : p.thoughts || []; } catch {}
+  }
+
+  if (!thoughts.length) {
+    container.innerHTML = `<div class="empty"><div class="empty-icon">◈</div><div class="empty-text">No thoughts found for this filter</div></div>`;
+    return;
+  }
+
+  container.innerHTML = `<div style="font-size:11px;color:var(--text3);margin-bottom:10px;">${thoughts.length} thought${thoughts.length>1?'s':''}</div><div class="thought-list"></div>`;
+  const list = container.querySelector('.thought-list');
+
+  thoughts.forEach(t => {
+    const meta = t.metadata || {};
+    const date = t.created_at ? new Date(t.created_at).toLocaleDateString('en-US', {month:'short', day:'numeric'}) : '';
+    const type = meta.type || t.type || '';
+
+    const item = document.createElement('div');
+    item.className = 'thought-item';
+    item.innerHTML = `
+      <div class="thought-bullet"></div>
+      <div>
+        <div class="thought-text">${escHtml(t.content || '')}</div>
+        <div class="thought-meta-small">${[date, type].filter(Boolean).join(' · ')}</div>
+      </div>
+    `;
+    list.appendChild(item);
+  });
+}
+
+// ── Ingest ────────────────────────────────────────────────────────────────────
+function chunkText(text, wordsPerChunk) {
+  const words = text.split(/\s+/).filter(Boolean);
+  const chunks = [];
+  for (let i = 0; i < words.length; i += wordsPerChunk) {
+    chunks.push(words.slice(i, i + wordsPerChunk).join(' '));
+  }
+  return chunks;
+}
+
+function previewChunks() {
+  const text = document.getElementById('ingestText').value.trim();
+  if (!text) { toast('Paste some content first', 'error'); return; }
+
+  const size   = parseInt(document.getElementById('chunkSize').value);
+  const chunks = chunkText(text, size);
+
+  const area    = document.getElementById('chunkPreviewArea');
+  const preview = document.getElementById('chunkPreview');
+  area.style.display = 'block';
+  preview.innerHTML  = '';
+
+  chunks.slice(0, 5).forEach((chunk, i) => {
+    const el = document.createElement('div');
+    el.className = 'chunk-item';
+    el.innerHTML = `<div class="chunk-num">CHUNK ${i+1} of ${chunks.length}</div>${escHtml(chunk)}`;
+    preview.appendChild(el);
+  });
+
+  if (chunks.length > 5) {
+    const el = document.createElement('div');
+    el.className = 'chunk-item';
+    el.style.color = 'var(--text3)';
+    el.textContent = `... and ${chunks.length - 5} more chunks`;
+    preview.appendChild(el);
+  }
+
+  toast(`${chunks.length} chunks ready to ingest`, 'info');
+}
+
+async function ingestDocument() {
+  const text = document.getElementById('ingestText').value.trim();
+  if (!text) { toast('Nothing to ingest', 'error'); return; }
+
+  const size    = parseInt(document.getElementById('chunkSize').value);
+  const source  = document.getElementById('ingestSource').value;
+  const project = document.getElementById('ingestProject').value.trim();
+  const chunks  = chunkText(text, size);
+
+  const btn      = document.getElementById('ingestBtn');
+  const progBar  = document.getElementById('ingestProgress');
+  const progFill = document.getElementById('ingestProgressFill');
+  const progText = document.getElementById('ingestProgressText');
+  const area     = document.getElementById('chunkPreviewArea');
+
+  area.style.display = 'block';
+  progBar.style.display = 'block';
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Ingesting...';
+
+  let success = 0;
+  for (let i = 0; i < chunks.length; i++) {
+    const pct = Math.round(((i) / chunks.length) * 100);
+    progFill.style.width = pct + '%';
+    progText.textContent = `Storing chunk ${i+1} of ${chunks.length}...`;
+
+    let content = chunks[i];
+    if (source)  content += `\n[source: ${source}]`;
+    if (project) content += `\n[project: ${project}]`;
+    content += `\n[chunk: ${i+1}/${chunks.length}]`;
+
+    try {
+      await mcpCall('capture_thought', { content });
+      success++;
+    } catch(e) {
+      toast(`Chunk ${i+1} failed: ${e.message}`, 'error');
+    }
+
+    // Small delay to avoid hammering the API
+    await new Promise(r => setTimeout(r, 300));
+  }
+
+  progFill.style.width = '100%';
+  progText.textContent = `Done — ${success}/${chunks.length} chunks stored`;
+  btn.disabled = false;
+  btn.innerHTML = '<span>⇥</span> Ingest to Open Brain';
+  toast(`Ingested ${success} chunks from your document ✦`, 'success');
+  updateStatus();
+}
+
+// ── Stats ─────────────────────────────────────────────────────────────────────
+async function loadStats() {
+  try {
+    const stats = await mcpCall('thought_stats', {});
+    const types   = stats.types || {};
+    const topics  = stats.top_topics || stats.topics || [];
+    const people  = stats.people || stats.top_people || [];
+    const total   = stats.total_thoughts || stats.total || 0;
+
+    document.getElementById('statTotal').textContent    = total;
+    document.getElementById('statObs').textContent      = types.observation || 0;
+    document.getElementById('statDecisions').textContent = types.decision || 0;
+    document.getElementById('statIdeas').textContent    = types.idea || 0;
+    document.getElementById('headerCount').innerHTML    = `<strong>${total}</strong> thoughts`;
+
+    const topicsEl = document.getElementById('statsTopics');
+    if (topics.length) {
+      topicsEl.innerHTML = topics.map(t =>
+        `<span class="tag" style="cursor:default;">${escHtml(typeof t === 'string' ? t : t.topic || t.name || JSON.stringify(t))}</span>`
+      ).join('');
+    } else {
+      topicsEl.innerHTML = `<div style="color:var(--text3); font-size:12px;">No topics yet</div>`;
+    }
+
+    const peopleEl = document.getElementById('statsPeople');
+    if (people.length) {
+      peopleEl.innerHTML = people.map(p =>
+        `<span class="tag" style="cursor:default; color:var(--gold); border-color:rgba(232,201,122,0.3);">${escHtml(typeof p === 'string' ? p : p.person || p.name || JSON.stringify(p))}</span>`
+      ).join('');
+    } else {
+      peopleEl.innerHTML = `<div style="color:var(--text3); font-size:12px;">No people mentioned yet</div>`;
+    }
+  } catch(e) {
+    toast(e.message, 'error');
+  }
+}
+
+// ── Workflows ─────────────────────────────────────────────────────────────────
+let currentWorkflow = null;
+
+function loadWorkflow(key) {
+  const wf = WORKFLOWS[key];
+  if (!wf) return;
+  currentWorkflow = wf;
+
+  const detail  = document.getElementById('workflowDetail');
+  const title   = document.getElementById('workflowDetailTitle');
+  const content = document.getElementById('workflowDetailContent');
+
+  detail.style.display  = 'block';
+  title.textContent     = wf.title;
+  content.innerHTML     = wf.prompt.replace(/\n/g, '<br>').replace(/---/g, '<hr style="border:none;border-top:1px solid var(--border);margin:10px 0;">');
+
+  detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function copyWorkflow() {
+  if (!currentWorkflow) return;
+  navigator.clipboard.writeText(currentWorkflow.prompt).then(() => {
+    toast('Prompt copied — paste into GitHub Copilot Chat', 'success');
+  });
+}
+
+// ── Toasts ────────────────────────────────────────────────────────────────────
+function toast(message, type = 'info') {
+  const container = document.getElementById('toastContainer');
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = `<span>${type === 'success' ? '✓' : type === 'error' ? '✗' : 'i'}</span><span>${escHtml(message)}</span>`;
+  container.appendChild(el);
+  setTimeout(() => el.remove(), 4000);
+}
+
+// ── Util ──────────────────────────────────────────────────────────────────────
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+</script>
+</body>
+</html>
