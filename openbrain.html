@@ -1243,31 +1243,17 @@ async function mcpCall(toolName, args) {
     throw new Error('Not configured — go to Settings first');
   }
 
-  const url = `${CFG.supabaseUrl}/functions/v1/open-brain-mcp?key=${CFG.mcpKey}`;
-
-  // JSON-RPC 2.0 format — what MCP servers actually expect
-  const body = {
-    jsonrpc: '2.0',
-    id: Date.now(),
-    method: 'tools/call',
-    params: { name: toolName, arguments: args }
-  };
+  const url = `${CFG.supabaseUrl}/functions/v1/open-brain-api?key=${CFG.mcpKey}`;
 
   let res;
   try {
     res = await fetch(url, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      body: JSON.stringify(body)
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tool: toolName, args: args })
     });
   } catch (networkErr) {
-    throw new Error(
-      'Network error — could not reach Supabase. Check your Supabase URL is correct. ' +
-      'Details: ' + networkErr.message
-    );
+    throw new Error('Network error — could not reach Supabase. Details: ' + networkErr.message);
   }
 
   if (!res.ok) {
@@ -1276,27 +1262,7 @@ async function mcpCall(toolName, args) {
   }
 
   const data = await res.json();
-
-  // Handle JSON-RPC response envelope
-  if (data.result) {
-    const result = data.result;
-    if (result.content && result.content[0]) {
-      const text = result.content[0].text;
-      try { return JSON.parse(text); } catch { return text; }
-    }
-    return result;
-  }
-
-  // Handle direct MCP response (no envelope)
-  if (data.content && data.content[0]) {
-    const text = data.content[0].text;
-    try { return JSON.parse(text); } catch { return text; }
-  }
-
-  if (data.error) {
-    throw new Error(data.error.message || JSON.stringify(data.error));
-  }
-
+  if (data.error) throw new Error(data.error);
   return data;
 }
 
