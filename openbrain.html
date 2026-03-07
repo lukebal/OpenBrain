@@ -70,11 +70,11 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 24px;
+    padding: 0 20px;
     border-bottom: 1px solid var(--border);
-    background: rgba(12,12,15,0.9);
+    background: rgba(12,12,15,0.95);
     backdrop-filter: blur(12px);
-    position: sticky; top: 0; z-index: 100;
+    position: sticky; top: 0; z-index: 200;
   }
 
   .logo {
@@ -100,14 +100,12 @@
     color: var(--text);
   }
 
-  .logo-text span {
-    color: var(--accent2);
-  }
+  .logo-text span { color: var(--accent2); }
 
   .header-status {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 12px;
   }
 
   .status-pill {
@@ -143,10 +141,41 @@
     color: var(--text3);
   }
 
-  .thought-count strong {
-    color: var(--gold);
-    font-style: italic;
+  .thought-count strong { color: var(--gold); font-style: italic; }
+
+  /* Hamburger button — hidden on desktop */
+  .menu-btn {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 36px; height: 36px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    padding: 8px;
+    transition: all 0.15s;
   }
+  .menu-btn:hover { background: var(--surface2); border-color: var(--border2); }
+  .menu-btn span {
+    display: block;
+    height: 1.5px;
+    background: var(--text2);
+    border-radius: 2px;
+    transition: all 0.2s;
+  }
+
+  /* Sidebar overlay — mobile only */
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 149;
+    backdrop-filter: blur(2px);
+  }
+  .sidebar-overlay.visible { display: block; }
 
   /* ── Sidebar ── */
   .sidebar {
@@ -157,6 +186,7 @@
     gap: 4px;
     overflow-y: auto;
     background: var(--surface);
+    transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
   }
 
   .sidebar-section {
@@ -178,19 +208,17 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 9px 12px;
+    padding: 10px 12px;
     border-radius: var(--radius);
     cursor: pointer;
     transition: all 0.15s;
     color: var(--text2);
     border: 1px solid transparent;
     font-size: 12px;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  .nav-item:hover {
-    background: var(--surface2);
-    color: var(--text);
-  }
+  .nav-item:hover { background: var(--surface2); color: var(--text); }
 
   .nav-item.active {
     background: rgba(124,106,247,0.12);
@@ -206,7 +234,6 @@
     margin: 8px 12px;
   }
 
-  /* Config section at bottom of sidebar */
   .sidebar-config {
     margin-top: auto;
     padding: 12px;
@@ -234,6 +261,116 @@
     display: flex;
     flex-direction: column;
     gap: 24px;
+  }
+
+  /* ── Mobile bottom nav ── */
+  .bottom-nav {
+    display: none;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(19,19,26,0.97);
+    border-top: 1px solid var(--border);
+    backdrop-filter: blur(16px);
+    z-index: 150;
+    padding: 0 4px;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .bottom-nav-inner {
+    display: flex;
+    align-items: stretch;
+    height: 58px;
+  }
+
+  .bottom-nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+    padding: 6px 2px;
+    color: var(--text3);
+    font-size: 9px;
+    letter-spacing: 0.04em;
+    border: 1px solid transparent;
+    margin: 4px 2px;
+  }
+
+  .bottom-nav-item.active {
+    color: var(--accent2);
+    background: rgba(124,106,247,0.1);
+    border-color: rgba(124,106,247,0.15);
+  }
+
+  .bottom-nav-item:active { transform: scale(0.93); }
+
+  .bottom-nav-icon {
+    font-size: 17px;
+    line-height: 1;
+  }
+
+  .bottom-nav-label {
+    font-family: 'Syne', sans-serif;
+    font-weight: 500;
+    font-size: 9px;
+    letter-spacing: 0.02em;
+  }
+
+  /* ── Responsive breakpoints ── */
+
+  /* Tablet: slide-in sidebar drawer */
+  @media (max-width: 900px) {
+    .shell {
+      grid-template-columns: 1fr;
+    }
+    .menu-btn { display: flex; }
+    .thought-count { display: none; }
+    .sidebar {
+      position: fixed;
+      top: 56px; left: 0; bottom: 0;
+      width: 240px;
+      z-index: 150;
+      transform: translateX(-100%);
+      border-right: 1px solid var(--border2);
+      box-shadow: 4px 0 24px rgba(0,0,0,0.4);
+    }
+    .sidebar.open { transform: translateX(0); }
+    .main { padding: 20px; }
+  }
+
+  /* Mobile: bottom nav, no sidebar at all */
+  @media (max-width: 600px) {
+    .shell { grid-template-rows: 52px 1fr; }
+    .header { padding: 0 14px; height: 52px; }
+    .menu-btn { display: none; }
+    .sidebar { display: none !important; }
+    .sidebar-overlay { display: none !important; }
+    .bottom-nav { display: block; }
+    .main {
+      padding: 16px 14px;
+      padding-bottom: calc(58px + env(safe-area-inset-bottom) + 12px);
+      gap: 16px;
+    }
+    .panel-title { font-size: 22px; }
+    .card { padding: 16px; }
+    .btn { padding: 11px 16px; font-size: 12px; }
+    .btn-row { gap: 8px; }
+    textarea { font-size: 16px; } /* prevent iOS zoom */
+    input[type="text"], input[type="password"], select { font-size: 16px; }
+    .template-grid { grid-template-columns: 1fr; }
+    .workflow-grid { grid-template-columns: 1fr 1fr; }
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+    .prompt-card-desc { display: none; }
+  }
+
+  @media (max-width: 380px) {
+    .workflow-grid { grid-template-columns: 1fr; }
+    .main { padding: 12px; }
   }
 
   /* ── Panels ── */
@@ -875,9 +1012,14 @@
 
   <!-- Header -->
   <header class="header">
-    <div class="logo">
-      <div class="logo-mark">🧠</div>
-      <div class="logo-text">Open<span>Brain</span></div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button class="menu-btn" id="menuBtn" onclick="toggleSidebar()" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="logo">
+        <div class="logo-mark">🧠</div>
+        <div class="logo-text">Open<span>Brain</span></div>
+      </div>
     </div>
     <div class="header-status">
       <div class="thought-count" id="headerCount">—</div>
@@ -888,8 +1030,11 @@
     </div>
   </header>
 
+  <!-- Sidebar overlay (mobile/tablet) -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
   <!-- Sidebar -->
-  <nav class="sidebar">
+  <nav class="sidebar" id="sidebar">
     <div class="sidebar-section">
       <div class="sidebar-label">Workspace</div>
       <div class="nav-item active" data-panel="capture" onclick="switchPanel('capture', this)">
@@ -1454,9 +1599,33 @@
     </div><!-- /panel-prompts -->
 
   </main>
-</div>
+</div><!-- /shell -->
 
-<!-- Toasts -->
+<!-- Mobile bottom nav -->
+<nav class="bottom-nav">
+  <div class="bottom-nav-inner">
+    <div class="bottom-nav-item active" id="bn-capture" onclick="switchPanel('capture', null, 'bn-capture')">
+      <span class="bottom-nav-icon">✦</span>
+      <span class="bottom-nav-label">Capture</span>
+    </div>
+    <div class="bottom-nav-item" id="bn-search" onclick="switchPanel('search', null, 'bn-search')">
+      <span class="bottom-nav-icon">◎</span>
+      <span class="bottom-nav-label">Search</span>
+    </div>
+    <div class="bottom-nav-item" id="bn-recent" onclick="switchPanel('recent', null, 'bn-recent')">
+      <span class="bottom-nav-icon">◈</span>
+      <span class="bottom-nav-label">Recent</span>
+    </div>
+    <div class="bottom-nav-item" id="bn-prompts" onclick="switchPanel('prompts', null, 'bn-prompts')">
+      <span class="bottom-nav-icon">✶</span>
+      <span class="bottom-nav-label">Prompts</span>
+    </div>
+    <div class="bottom-nav-item" id="bn-more" onclick="toggleSidebar()">
+      <span class="bottom-nav-icon">⋯</span>
+      <span class="bottom-nav-label">More</span>
+    </div>
+  </div>
+</nav>
 <div class="toast-container" id="toastContainer"></div>
 
 <script>
@@ -1567,15 +1736,51 @@ function loadConfigIntoForm() {
 }
 
 // ── Navigation ────────────────────────────────────────────────────────────────
-function switchPanel(name, el) {
+// bottomNavId is optional — the id of the bottom-nav-item to activate
+function switchPanel(name, el, bottomNavId) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.bottom-nav-item').forEach(n => n.classList.remove('active'));
+
   document.getElementById('panel-' + name).classList.add('active');
   if (el && el.classList) el.classList.add('active');
+
+  // Sync bottom nav active state
+  const bnId = bottomNavId || ('bn-' + name);
+  const bnEl = document.getElementById(bnId);
+  if (bnEl) bnEl.classList.add('active');
+
+  // Auto-close sidebar drawer on mobile after nav
+  if (window.innerWidth <= 900) closeSidebar();
 
   if (name === 'stats') loadStats();
   if (name === 'recent') loadRecent();
 }
+
+// ── Mobile sidebar toggle ─────────────────────────────────────────────────────
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  const isOpen = sidebar.classList.contains('open');
+  if (isOpen) {
+    closeSidebar();
+  } else {
+    sidebar.classList.add('open');
+    overlay.classList.add('visible');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('visible');
+  document.body.style.overflow = '';
+}
+
+// Close sidebar on Escape key
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeSidebar();
+});
 
 // ── MCP API call ──────────────────────────────────────────────────────────────
 async function mcpCall(toolName, args) {
