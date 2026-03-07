@@ -1013,6 +1013,247 @@
     padding: 4px 2px;
     margin-top: 4px;
   }
+
+  /* ── Smart Template Forms ── */
+  .tpl-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 10px;
+  }
+
+  .tpl-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .tpl-card.open { border-color: rgba(124,106,247,0.4); }
+
+  .tpl-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 14px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+  .tpl-card-header:hover { background: rgba(255,255,255,0.02); }
+
+  .tpl-icon { font-size: 20px; flex-shrink: 0; }
+  .tpl-card-label { flex: 1; min-width: 0; }
+  .tpl-card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .tpl-card-hint { font-size: 10px; color: var(--text3); margin-top: 1px; }
+
+  .tpl-chevron {
+    font-size: 20px;
+    color: var(--text3);
+    transition: transform 0.2s;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+  .tpl-card.open .tpl-chevron { transform: rotate(90deg); }
+
+  .tpl-form {
+    display: none;
+    padding: 4px 14px 14px;
+    border-top: 1px solid var(--border);
+    flex-direction: column;
+    gap: 10px;
+  }
+  .tpl-card.open .tpl-form { display: flex; }
+
+  .tpl-field { display: flex; flex-direction: column; gap: 5px; }
+
+  .tpl-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text3);
+    padding-top: 6px;
+  }
+
+  .tpl-input-row {
+    display: flex;
+    gap: 6px;
+    align-items: flex-start;
+  }
+
+  .tpl-input {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    padding: 9px 11px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    resize: none;
+    width: 100%;
+  }
+  .tpl-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(124,106,247,0.1);
+  }
+  .tpl-input::placeholder { color: var(--text3); }
+
+  .tpl-mic {
+    flex-shrink: 0;
+    width: 36px; height: 36px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .tpl-mic:hover { background: var(--surface); border-color: var(--accent); }
+  .tpl-mic.recording {
+    background: rgba(224,107,107,0.15);
+    border-color: var(--danger);
+    animation: micPulse 1s ease-in-out infinite;
+  }
+  .tpl-mic-top { align-self: flex-start; margin-top: 1px; }
+
+  @keyframes micPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(224,107,107,0.4); }
+    50% { box-shadow: 0 0 0 6px rgba(224,107,107,0); }
+  }
+
+  .tpl-preview {
+    font-size: 11px;
+    color: var(--text3);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    line-height: 1.6;
+    display: none;
+    font-style: italic;
+  }
+  .tpl-preview.visible { display: block; }
+
+  .tpl-capture-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 12px;
+    font-size: 13px;
+  }
+
+  /* ── Voice launch button ── */
+  .voice-launch-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 10px 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.15s;
+    flex-shrink: 0;
+    font-size: 20px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .voice-launch-btn:hover { border-color: var(--accent); background: rgba(124,106,247,0.08); }
+  .voice-launch-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text3);
+  }
+
+  /* ── Voice modal ── */
+  .voice-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(8px);
+    z-index: 300;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .voice-modal.open { display: flex; }
+
+  .voice-modal-inner {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 16px;
+    padding: 28px 24px;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+  }
+
+  .voice-modal-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 22px;
+    font-style: italic;
+    color: var(--text);
+  }
+
+  .voice-modal-sub { font-size: 12px; color: var(--text3); line-height: 1.5; }
+
+  .voice-orb {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--gold));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin: 8px 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .voice-orb.idle { background: var(--surface2); border: 2px solid var(--border2); }
+  .voice-orb.listening { animation: orbPulse 1.5s ease-in-out infinite; box-shadow: 0 0 30px rgba(124,106,247,0.5); }
+  .voice-orb.done { background: linear-gradient(135deg, var(--success), #3d9e70); }
+
+  @keyframes orbPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(124,106,247,0.5); transform: scale(1); }
+    50% { box-shadow: 0 0 0 16px rgba(124,106,247,0); transform: scale(1.05); }
+  }
+
+  .voice-transcript {
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.6;
+    min-height: 40px;
+    max-height: 120px;
+    overflow-y: auto;
+    width: 100%;
+    padding: 8px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    text-align: left;
+  }
+
+  @media (max-width: 600px) {
+    .tpl-grid { grid-template-columns: 1fr; }
+    .tpl-input { font-size: 16px; }
+  }
 </style>
 <body>
 
@@ -1084,9 +1325,15 @@
 
     <!-- ── CAPTURE ── -->
     <div class="panel active" id="panel-capture">
-      <div>
-        <div class="panel-title">Capture a <span>thought</span></div>
-        <div class="panel-sub">Distilled signal from Copilot, meetings, or your own thinking</div>
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">
+        <div>
+          <div class="panel-title">Capture a <span>thought</span></div>
+          <div class="panel-sub">Freeform below — or use a template to fill and fire</div>
+        </div>
+        <button class="voice-launch-btn" onclick="openVoiceModal()" title="Voice capture">
+          <span>🎙️</span>
+          <span class="voice-launch-label">Voice</span>
+        </button>
       </div>
 
       <div class="card">
@@ -1140,87 +1387,200 @@
         <div id="captureStatus" style="font-size:11px; color:var(--text3); margin-left:4px;"></div>
       </div>
 
-      <div class="prompts-section-label" style="margin-top:4px;">Quick Capture Templates — click to expand, then copy into Slack or any MCP AI</div>
-      <div class="template-grid">
-        <div class="template-card" onclick="toggleTemplate(this)">
-          <div class="template-header">
-            <span class="template-icon">⚖️</span>
-            <div>
-              <div class="template-title">Decision Capture</div>
-              <div class="template-hint">Decisions with context + owner</div>
+      <div class="prompts-section-label" style="margin-top:4px;">Quick Capture — tap a template, fill in the fields, hit capture</div>
+
+      <!-- Smart template forms -->
+      <div class="tpl-grid" id="tplGrid">
+
+        <!-- Decision -->
+        <div class="tpl-card" id="tpl-decision">
+          <div class="tpl-card-header" onclick="openTpl('decision')">
+            <span class="tpl-icon">⚖️</span>
+            <div class="tpl-card-label">
+              <div class="tpl-card-title">Decision</div>
+              <div class="tpl-card-hint">What was decided, why, who owns it</div>
             </div>
-            <span class="prompt-chevron" style="margin-left:auto;">›</span>
+            <span class="tpl-chevron" id="tpl-chevron-decision">›</span>
           </div>
-          <div class="template-body">
-            <div class="template-format">Decision: [what was decided]. Context: [why]. Owner: [who].</div>
-            <div class="template-example"><span class="template-example-label">Example</span>Decision: Moving the launch to March 15. Context: QA found three blockers in the payment flow. Owner: Rachel.</div>
-            <button class="btn btn-ghost" style="margin-top:10px;font-size:11px;" onclick="copyTemplate(event,'Decision: [what was decided]. Context: [why]. Owner: [who].')">⎘ Copy template</button>
+          <div class="tpl-form" id="tplform-decision">
+            <div class="tpl-field">
+              <label class="tpl-label">What was decided?</label>
+              <div class="tpl-input-row">
+                <input type="text" class="tpl-input" id="df-decision" placeholder="e.g. Moving the launch to March 15">
+                <button class="tpl-mic" onclick="startVoiceField(event,'df-decision')" title="Speak">🎙️</button>
+              </div>
+            </div>
+            <div class="tpl-field">
+              <label class="tpl-label">Why?</label>
+              <div class="tpl-input-row">
+                <input type="text" class="tpl-input" id="df-context" placeholder="e.g. QA found three blockers in payment flow">
+                <button class="tpl-mic" onclick="startVoiceField(event,'df-context')" title="Speak">🎙️</button>
+              </div>
+            </div>
+            <div class="tpl-field">
+              <label class="tpl-label">Owner</label>
+              <div class="tpl-input-row">
+                <input type="text" class="tpl-input" id="df-owner" placeholder="e.g. Rachel">
+                <button class="tpl-mic" onclick="startVoiceField(event,'df-owner')" title="Speak">🎙️</button>
+              </div>
+            </div>
+            <div class="tpl-preview" id="tpl-preview-decision"></div>
+            <button class="btn btn-primary tpl-capture-btn" onclick="captureFromTpl('decision')"><span>✦</span> Capture</button>
           </div>
         </div>
-        <div class="template-card" onclick="toggleTemplate(this)">
-          <div class="template-header">
-            <span class="template-icon">👤</span>
-            <div>
-              <div class="template-title">Person Note</div>
-              <div class="template-hint">Context on people that matters later</div>
+
+        <!-- Person Note -->
+        <div class="tpl-card" id="tpl-person">
+          <div class="tpl-card-header" onclick="openTpl('person')">
+            <span class="tpl-icon">👤</span>
+            <div class="tpl-card-label">
+              <div class="tpl-card-title">Person Note</div>
+              <div class="tpl-card-hint">Context on someone that matters later</div>
             </div>
-            <span class="prompt-chevron" style="margin-left:auto;">›</span>
+            <span class="tpl-chevron" id="tpl-chevron-person">›</span>
           </div>
-          <div class="template-body">
-            <div class="template-format">[Name] — [what happened or what you learned about them].</div>
-            <div class="template-example"><span class="template-example-label">Example</span>Marcus — mentioned he's overwhelmed since the reorg. Wants to move to the platform team. His wife just had a baby.</div>
-            <button class="btn btn-ghost" style="margin-top:10px;font-size:11px;" onclick="copyTemplate(event,'[Name] — [what happened or what you learned about them].')">⎘ Copy template</button>
+          <div class="tpl-form" id="tplform-person">
+            <div class="tpl-field">
+              <label class="tpl-label">Name</label>
+              <div class="tpl-input-row">
+                <input type="text" class="tpl-input" id="pf-name" placeholder="e.g. Marcus">
+                <button class="tpl-mic" onclick="startVoiceField(event,'pf-name')" title="Speak">🎙️</button>
+              </div>
+            </div>
+            <div class="tpl-field">
+              <label class="tpl-label">What happened or what did you learn?</label>
+              <div class="tpl-input-row">
+                <textarea class="tpl-input" id="pf-note" rows="3" placeholder="e.g. mentioned he's overwhelmed since the reorg, wants to move to the platform team"></textarea>
+                <button class="tpl-mic tpl-mic-top" onclick="startVoiceField(event,'pf-note')" title="Speak">🎙️</button>
+              </div>
+            </div>
+            <div class="tpl-preview" id="tpl-preview-person"></div>
+            <button class="btn btn-primary tpl-capture-btn" onclick="captureFromTpl('person')"><span>✦</span> Capture</button>
           </div>
         </div>
-        <div class="template-card" onclick="toggleTemplate(this)">
-          <div class="template-header">
-            <span class="template-icon">💡</span>
-            <div>
-              <div class="template-title">Insight Capture</div>
-              <div class="template-hint">Realizations + what triggered them</div>
+
+        <!-- Insight -->
+        <div class="tpl-card" id="tpl-insight">
+          <div class="tpl-card-header" onclick="openTpl('insight')">
+            <span class="tpl-icon">💡</span>
+            <div class="tpl-card-label">
+              <div class="tpl-card-title">Insight</div>
+              <div class="tpl-card-hint">Realization + what triggered it</div>
             </div>
-            <span class="prompt-chevron" style="margin-left:auto;">›</span>
+            <span class="tpl-chevron" id="tpl-chevron-insight">›</span>
           </div>
-          <div class="template-body">
-            <div class="template-format">Insight: [the thing you realized]. Triggered by: [what made you think of it].</div>
-            <div class="template-example"><span class="template-example-label">Example</span>Insight: Our onboarding flow assumes users already understand permissions. Triggered by: watching a new hire struggle for 20 minutes with role setup.</div>
-            <button class="btn btn-ghost" style="margin-top:10px;font-size:11px;" onclick="copyTemplate(event,'Insight: [the thing you realized]. Triggered by: [what made you think of it].')">⎘ Copy template</button>
+          <div class="tpl-form" id="tplform-insight">
+            <div class="tpl-field">
+              <label class="tpl-label">What did you realize?</label>
+              <div class="tpl-input-row">
+                <textarea class="tpl-input" id="if-insight" rows="2" placeholder="e.g. Our onboarding assumes users already understand permissions"></textarea>
+                <button class="tpl-mic tpl-mic-top" onclick="startVoiceField(event,'if-insight')" title="Speak">🎙️</button>
+              </div>
+            </div>
+            <div class="tpl-field">
+              <label class="tpl-label">What triggered it?</label>
+              <div class="tpl-input-row">
+                <input type="text" class="tpl-input" id="if-trigger" placeholder="e.g. watching a new hire struggle with role setup">
+                <button class="tpl-mic" onclick="startVoiceField(event,'if-trigger')" title="Speak">🎙️</button>
+              </div>
+            </div>
+            <div class="tpl-preview" id="tpl-preview-insight"></div>
+            <button class="btn btn-primary tpl-capture-btn" onclick="captureFromTpl('insight')"><span>✦</span> Capture</button>
           </div>
         </div>
-        <div class="template-card" onclick="toggleTemplate(this)">
-          <div class="template-header">
-            <span class="template-icon">🗣️</span>
-            <div>
-              <div class="template-title">Meeting Debrief</div>
-              <div class="template-hint">Key points + action items</div>
+
+        <!-- Meeting Debrief -->
+        <div class="tpl-card" id="tpl-meeting">
+          <div class="tpl-card-header" onclick="openTpl('meeting')">
+            <span class="tpl-icon">🗣️</span>
+            <div class="tpl-card-label">
+              <div class="tpl-card-title">Meeting Debrief</div>
+              <div class="tpl-card-hint">Key points + action items</div>
             </div>
-            <span class="prompt-chevron" style="margin-left:auto;">›</span>
+            <span class="tpl-chevron" id="tpl-chevron-meeting">›</span>
           </div>
-          <div class="template-body">
-            <div class="template-format">Meeting with [who] about [topic]. Key points: [the important stuff]. Action items: [what happens next].</div>
-            <div class="template-example"><span class="template-example-label">Example</span>Meeting with design team about the dashboard redesign. Key points: they want to cut three panels, keep the revenue chart, add a trend line. Action items: I send them the API spec by Thursday, they send revised mocks by Monday.</div>
-            <button class="btn btn-ghost" style="margin-top:10px;font-size:11px;" onclick="copyTemplate(event,'Meeting with [who] about [topic]. Key points: [the important stuff]. Action items: [what happens next].')">⎘ Copy template</button>
+          <div class="tpl-form" id="tplform-meeting">
+            <div class="tpl-field">
+              <label class="tpl-label">Who was it with?</label>
+              <div class="tpl-input-row">
+                <input type="text" class="tpl-input" id="mf-who" placeholder="e.g. design team">
+                <button class="tpl-mic" onclick="startVoiceField(event,'mf-who')" title="Speak">🎙️</button>
+              </div>
+            </div>
+            <div class="tpl-field">
+              <label class="tpl-label">About what?</label>
+              <div class="tpl-input-row">
+                <input type="text" class="tpl-input" id="mf-topic" placeholder="e.g. dashboard redesign">
+                <button class="tpl-mic" onclick="startVoiceField(event,'mf-topic')" title="Speak">🎙️</button>
+              </div>
+            </div>
+            <div class="tpl-field">
+              <label class="tpl-label">Key points</label>
+              <div class="tpl-input-row">
+                <textarea class="tpl-input" id="mf-points" rows="2" placeholder="e.g. cut three panels, keep revenue chart, add trend line"></textarea>
+                <button class="tpl-mic tpl-mic-top" onclick="startVoiceField(event,'mf-points')" title="Speak">🎙️</button>
+              </div>
+            </div>
+            <div class="tpl-field">
+              <label class="tpl-label">Action items</label>
+              <div class="tpl-input-row">
+                <textarea class="tpl-input" id="mf-actions" rows="2" placeholder="e.g. I send API spec by Thursday, they send mocks by Monday"></textarea>
+                <button class="tpl-mic tpl-mic-top" onclick="startVoiceField(event,'mf-actions')" title="Speak">🎙️</button>
+              </div>
+            </div>
+            <div class="tpl-preview" id="tpl-preview-meeting"></div>
+            <button class="btn btn-primary tpl-capture-btn" onclick="captureFromTpl('meeting')"><span>✦</span> Capture</button>
           </div>
         </div>
-        <div class="template-card" onclick="toggleTemplate(this)">
-          <div class="template-header">
-            <span class="template-icon">🤖</span>
-            <div>
-              <div class="template-title">The AI Save</div>
-              <div class="template-hint">Save good AI output before it's gone</div>
+
+        <!-- AI Save -->
+        <div class="tpl-card" id="tpl-aisave">
+          <div class="tpl-card-header" onclick="openTpl('aisave')">
+            <span class="tpl-icon">🤖</span>
+            <div class="tpl-card-label">
+              <div class="tpl-card-title">AI Save</div>
+              <div class="tpl-card-hint">Save good AI output before it's gone</div>
             </div>
-            <span class="prompt-chevron" style="margin-left:auto;">›</span>
+            <span class="tpl-chevron" id="tpl-chevron-aisave">›</span>
           </div>
-          <div class="template-body">
-            <div class="template-format">Saving from [AI tool]: [the key takeaway or output worth keeping].</div>
-            <div class="template-example"><span class="template-example-label">Example</span>Saving from Claude: Framework for evaluating vendor proposals — score on integration effort (40%), maintenance burden (30%), and switching cost (30%). Weight integration highest because that's where every past vendor has surprised us.</div>
-            <button class="btn btn-ghost" style="margin-top:10px;font-size:11px;" onclick="copyTemplate(event,'Saving from [AI tool]: [the key takeaway or output worth keeping].')">⎘ Copy template</button>
+          <div class="tpl-form" id="tplform-aisave">
+            <div class="tpl-field">
+              <label class="tpl-label">Which AI tool?</label>
+              <div class="tpl-input-row">
+                <input type="text" class="tpl-input" id="af-tool" placeholder="e.g. Claude, ChatGPT, Gemini">
+                <button class="tpl-mic" onclick="startVoiceField(event,'af-tool')" title="Speak">🎙️</button>
+              </div>
+            </div>
+            <div class="tpl-field">
+              <label class="tpl-label">What's worth keeping?</label>
+              <div class="tpl-input-row">
+                <textarea class="tpl-input" id="af-output" rows="4" placeholder="e.g. Framework for evaluating vendor proposals — score on integration effort (40%)..."></textarea>
+                <button class="tpl-mic tpl-mic-top" onclick="startVoiceField(event,'af-output')" title="Speak">🎙️</button>
+              </div>
+            </div>
+            <div class="tpl-preview" id="tpl-preview-aisave"></div>
+            <button class="btn btn-primary tpl-capture-btn" onclick="captureFromTpl('aisave')"><span>✦</span> Capture</button>
+          </div>
+        </div>
+
+      </div><!-- /tpl-grid -->
+
+      <!-- Voice capture modal -->
+      <div class="voice-modal" id="voiceModal">
+        <div class="voice-modal-inner">
+          <div class="voice-modal-title">Speak your capture</div>
+          <div class="voice-modal-sub" id="voiceModalSub">Say what you want to capture — I'll match it to the right template</div>
+          <div class="voice-orb" id="voiceOrb">🎙️</div>
+          <div class="voice-transcript" id="voiceTranscript">Listening...</div>
+          <div style="display:flex;gap:10px;justify-content:center;margin-top:16px;">
+            <button class="btn btn-primary" id="voiceConfirmBtn" style="display:none;" onclick="confirmVoiceCapture()"><span>✦</span> Capture</button>
+            <button class="btn btn-ghost" onclick="closeVoiceModal()">Cancel</button>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- ── SEARCH ── -->
+    </div><!-- /panel-capture -->
+
     <div class="panel" id="panel-search">
       <div>
         <div class="panel-title">Search your <span>brain</span></div>
@@ -2412,6 +2772,322 @@ function copyTemplate(event, text) {
   navigator.clipboard.writeText(text).then(() => {
     toast('Template copied to clipboard', 'success');
   }).catch(() => toast('Copy failed', 'error'));
+}
+
+// ── Smart Template Forms ──────────────────────────────────────────────────────
+let activeTpl = null;
+
+function openTpl(id) {
+  const card = document.getElementById('tpl-' + id);
+  const isOpen = card.classList.contains('open');
+  // Close any open card first
+  if (activeTpl && activeTpl !== id) {
+    const prev = document.getElementById('tpl-' + activeTpl);
+    if (prev) prev.classList.remove('open');
+  }
+  card.classList.toggle('open', !isOpen);
+  activeTpl = isOpen ? null : id;
+
+  // Focus first input when opening
+  if (!isOpen) {
+    setTimeout(() => {
+      const first = card.querySelector('.tpl-input');
+      if (first) first.focus();
+    }, 50);
+    // Wire up live preview
+    card.querySelectorAll('.tpl-input').forEach(inp => {
+      inp.addEventListener('input', () => updateTplPreview(id));
+    });
+  }
+}
+
+function updateTplPreview(id) {
+  const preview = document.getElementById('tpl-preview-' + id);
+  const text = assembleTpl(id);
+  if (text && preview) {
+    preview.textContent = text;
+    preview.classList.add('visible');
+  } else if (preview) {
+    preview.classList.remove('visible');
+  }
+}
+
+function assembleTpl(id) {
+  const g = (fieldId) => {
+    const el = document.getElementById(fieldId);
+    return el ? el.value.trim() : '';
+  };
+  switch (id) {
+    case 'decision': {
+      const d = g('df-decision'), c = g('df-context'), o = g('df-owner');
+      if (!d) return '';
+      let s = `Decision: ${d}.`;
+      if (c) s += ` Context: ${c}.`;
+      if (o) s += ` Owner: ${o}.`;
+      return s;
+    }
+    case 'person': {
+      const n = g('pf-name'), note = g('pf-note');
+      if (!n && !note) return '';
+      return n ? `${n} — ${note}` : note;
+    }
+    case 'insight': {
+      const ins = g('if-insight'), trig = g('if-trigger');
+      if (!ins) return '';
+      let s = `Insight: ${ins}.`;
+      if (trig) s += ` Triggered by: ${trig}.`;
+      return s;
+    }
+    case 'meeting': {
+      const who = g('mf-who'), topic = g('mf-topic'), pts = g('mf-points'), acts = g('mf-actions');
+      if (!who && !topic) return '';
+      let s = `Meeting with ${who || '[who]'} about ${topic || '[topic]'}.`;
+      if (pts) s += ` Key points: ${pts}.`;
+      if (acts) s += ` Action items: ${acts}.`;
+      return s;
+    }
+    case 'aisave': {
+      const tool = g('af-tool'), out = g('af-output');
+      if (!out) return '';
+      return `Saving from ${tool || 'AI'}: ${out}`;
+    }
+  }
+  return '';
+}
+
+async function captureFromTpl(id) {
+  const text = assembleTpl(id);
+  if (!text) { toast('Fill in at least one field first', 'error'); return; }
+
+  const btn = document.querySelector(`#tpl-${id} .tpl-capture-btn`);
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Capturing...';
+
+  try {
+    await mcpCall('capture_thought', { content: text });
+    toast('Captured ✦', 'success');
+    // Clear fields
+    document.querySelectorAll(`#tplform-${id} .tpl-input`).forEach(el => el.value = '');
+    const preview = document.getElementById('tpl-preview-' + id);
+    if (preview) preview.classList.remove('visible');
+    // Close card
+    document.getElementById('tpl-' + id).classList.remove('open');
+    activeTpl = null;
+    updateStatus();
+  } catch(e) {
+    toast(e.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<span>✦</span> Capture';
+  }
+}
+
+// ── Per-field voice input ─────────────────────────────────────────────────────
+let activeFieldRecognition = null;
+
+function startVoiceField(event, fieldId) {
+  event.stopPropagation();
+  const btn = event.currentTarget;
+
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    toast('Voice input not supported in this browser', 'error'); return;
+  }
+
+  // If already recording this field, stop
+  if (activeFieldRecognition) {
+    activeFieldRecognition.stop();
+    activeFieldRecognition = null;
+    document.querySelectorAll('.tpl-mic.recording').forEach(b => b.classList.remove('recording'));
+    return;
+  }
+
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const rec = new SR();
+  rec.continuous = false;
+  rec.interimResults = true;
+  rec.lang = 'en-US';
+  activeFieldRecognition = rec;
+  btn.classList.add('recording');
+
+  rec.onresult = (e) => {
+    const transcript = Array.from(e.results).map(r => r[0].transcript).join('');
+    const field = document.getElementById(fieldId);
+    if (field) field.value = transcript;
+    // Find which template this field belongs to and update preview
+    const tplId = field.closest('.tpl-card')?.id?.replace('tpl-', '');
+    if (tplId) updateTplPreview(tplId);
+  };
+
+  rec.onend = () => {
+    btn.classList.remove('recording');
+    activeFieldRecognition = null;
+  };
+
+  rec.onerror = (e) => {
+    btn.classList.remove('recording');
+    activeFieldRecognition = null;
+    if (e.error !== 'no-speech' && e.error !== 'aborted') {
+      toast(`Voice error: ${e.error}`, 'error');
+    }
+  };
+
+  rec.start();
+}
+
+// ── Full voice modal ──────────────────────────────────────────────────────────
+let modalRecognition = null;
+let voiceTranscriptFinal = '';
+
+function openVoiceModal() {
+  const modal = document.getElementById('voiceModal');
+  modal.classList.add('open');
+  document.getElementById('voiceTranscript').textContent = 'Tap the orb to start speaking...';
+  document.getElementById('voiceOrb').className = 'voice-orb idle';
+  document.getElementById('voiceConfirmBtn').style.display = 'none';
+  document.getElementById('voiceModalSub').textContent = "Say what you want to capture — I'll match it to the right template";
+  voiceTranscriptFinal = '';
+}
+
+function closeVoiceModal() {
+  if (modalRecognition) { modalRecognition.stop(); modalRecognition = null; }
+  document.getElementById('voiceModal').classList.remove('open');
+}
+
+document.getElementById('voiceOrb').addEventListener('click', function() {
+  if (modalRecognition) {
+    modalRecognition.stop();
+    return;
+  }
+
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    document.getElementById('voiceTranscript').textContent = 'Voice input is not supported in this browser. Try Chrome or Safari on iOS.';
+    return;
+  }
+
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const rec = new SR();
+  rec.continuous = true;
+  rec.interimResults = true;
+  rec.lang = 'en-US';
+  modalRecognition = rec;
+
+  this.className = 'voice-orb listening';
+  document.getElementById('voiceTranscript').textContent = 'Listening...';
+  document.getElementById('voiceConfirmBtn').style.display = 'none';
+  document.getElementById('voiceModalSub').textContent = 'Speak now — tap orb again to stop';
+
+  rec.onresult = (e) => {
+    let interim = '', final = '';
+    for (let r of e.results) {
+      if (r.isFinal) final += r[0].transcript;
+      else interim += r[0].transcript;
+    }
+    voiceTranscriptFinal = final || interim;
+    document.getElementById('voiceTranscript').textContent = voiceTranscriptFinal || 'Listening...';
+  };
+
+  rec.onend = () => {
+    modalRecognition = null;
+    const orb = document.getElementById('voiceOrb');
+    if (voiceTranscriptFinal.trim()) {
+      orb.className = 'voice-orb done';
+      document.getElementById('voiceTranscript').textContent = voiceTranscriptFinal;
+      routeVoiceToTemplate(voiceTranscriptFinal.trim());
+    } else {
+      orb.className = 'voice-orb idle';
+      document.getElementById('voiceTranscript').textContent = 'Nothing heard — tap orb to try again.';
+    }
+  };
+
+  rec.onerror = (e) => {
+    modalRecognition = null;
+    document.getElementById('voiceOrb').className = 'voice-orb idle';
+    if (e.error !== 'no-speech' && e.error !== 'aborted') {
+      document.getElementById('voiceTranscript').textContent = `Error: ${e.error}. Tap to try again.`;
+    }
+  };
+
+  rec.start();
+});
+
+function routeVoiceToTemplate(text) {
+  const lower = text.toLowerCase();
+  let tplId = null;
+  let fields = {};
+
+  if (/^decision[:\s]|decided|we('re| are) (going to|moving|launching)/i.test(text)) {
+    tplId = 'decision';
+    // Try to extract parts — best-effort heuristic
+    fields['df-decision'] = text.replace(/^decision[:\s]*/i, '').replace(/\s*context[:\s].*/i, '').replace(/\s*owner[:\s].*/i, '').trim();
+    const ctxMatch = text.match(/context[:\s]+([^.]+)/i);
+    if (ctxMatch) fields['df-context'] = ctxMatch[1].trim();
+    const ownMatch = text.match(/owner[:\s]+([^.]+)/i);
+    if (ownMatch) fields['df-owner'] = ownMatch[1].trim();
+  } else if (/^insight[:\s]|triggered by|i realized|i noticed/i.test(text)) {
+    tplId = 'insight';
+    fields['if-insight'] = text.replace(/^insight[:\s]*/i, '').replace(/\s*triggered by[:\s].*/i, '').trim();
+    const trigMatch = text.match(/triggered by[:\s]+(.+)/i);
+    if (trigMatch) fields['if-trigger'] = trigMatch[1].trim();
+  } else if (/^meeting with|had a meeting|we met with|meeting about/i.test(text)) {
+    tplId = 'meeting';
+    const whoMatch = text.match(/meeting with ([^about.]+)/i);
+    if (whoMatch) fields['mf-who'] = whoMatch[1].trim();
+    const topicMatch = text.match(/about ([^.]+)/i);
+    if (topicMatch) fields['mf-topic'] = topicMatch[1].trim();
+    const actMatch = text.match(/action items?[:\s]+(.+)/i);
+    if (actMatch) fields['mf-actions'] = actMatch[1].trim();
+    const ptMatch = text.match(/key points?[:\s]+([^.]+)/i);
+    if (ptMatch) fields['mf-points'] = ptMatch[1].trim();
+  } else if (/^saving from|save from|from (claude|chatgpt|gemini|gpt|copilot)/i.test(text)) {
+    tplId = 'aisave';
+    const toolMatch = text.match(/(?:saving?|save) from ([a-z0-9 ]+)[:\s]/i) || text.match(/from ([a-z0-9]+)[:\s]/i);
+    if (toolMatch) fields['af-tool'] = toolMatch[1].trim();
+    fields['af-output'] = text.replace(/^.+?[:\s]+/i, '').trim();
+  } else if (/^[A-Z][a-z]+ (—|-)|said|mentioned|told me|wants to|is (feeling|thinking|considering)/i.test(text)) {
+    tplId = 'person';
+    const dashMatch = text.match(/^([A-Z][a-z]+(?: [A-Z][a-z]+)?)\s*[—\-]\s*(.+)/);
+    if (dashMatch) {
+      fields['pf-name'] = dashMatch[1].trim();
+      fields['pf-note'] = dashMatch[2].trim();
+    } else {
+      fields['pf-note'] = text;
+    }
+  }
+
+  if (tplId) {
+    // Pre-fill template fields
+    Object.entries(fields).forEach(([id, val]) => {
+      const el = document.getElementById(id);
+      if (el) el.value = val;
+    });
+    document.getElementById('voiceModalSub').textContent = `Matched to ${tplId.charAt(0).toUpperCase() + tplId.slice(1)} template — review and capture`;
+    document.getElementById('voiceConfirmBtn').style.display = 'inline-flex';
+    document.getElementById('voiceConfirmBtn').dataset.tpl = tplId;
+    updateTplPreview(tplId);
+  } else {
+    // No template matched — route to freeform textarea
+    document.getElementById('captureText').value = text;
+    document.getElementById('voiceModalSub').textContent = 'Saved to freeform capture — review and submit';
+    document.getElementById('voiceConfirmBtn').style.display = 'inline-flex';
+    document.getElementById('voiceConfirmBtn').dataset.tpl = 'freeform';
+  }
+}
+
+async function confirmVoiceCapture() {
+  const btn = document.getElementById('voiceConfirmBtn');
+  const tplId = btn.dataset.tpl;
+
+  closeVoiceModal();
+
+  if (tplId === 'freeform') {
+    // Open the card isn't needed — just fire captureThought with the pre-filled textarea
+    await captureThought();
+  } else {
+    // Open the matched template card so user can see/edit, then fire
+    openTpl(tplId);
+    // Small delay so card opens visibly before firing
+    setTimeout(() => captureFromTpl(tplId), 300);
+  }
 }
 
 // ── Util ──────────────────────────────────────────────────────────────────────
