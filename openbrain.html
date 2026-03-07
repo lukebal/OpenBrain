@@ -347,9 +347,17 @@
   @media (max-width: 600px) {
     .shell { grid-template-rows: 52px 1fr; }
     .header { padding: 0 14px; height: 52px; }
-    .menu-btn { display: none; }
-    .sidebar { display: none !important; }
-    .sidebar-overlay { display: none !important; }
+    .menu-btn { display: flex; }
+    .sidebar {
+      position: fixed;
+      top: 52px; left: 0; bottom: 0;
+      width: 240px;
+      z-index: 150;
+      transform: translateX(-100%);
+      border-right: 1px solid var(--border2);
+      box-shadow: 4px 0 24px rgba(0,0,0,0.4);
+    }
+    .sidebar.open { transform: translateX(0); }
     .bottom-nav { display: block; }
     .main {
       padding: 16px 14px;
@@ -360,7 +368,7 @@
     .card { padding: 16px; }
     .btn { padding: 11px 16px; font-size: 12px; }
     .btn-row { gap: 8px; }
-    textarea { font-size: 16px; } /* prevent iOS zoom */
+    textarea { font-size: 16px; }
     input[type="text"], input[type="password"], select { font-size: 16px; }
     .template-grid { grid-template-columns: 1fr; }
     .workflow-grid { grid-template-columns: 1fr 1fr; }
@@ -1612,13 +1620,13 @@
       <span class="bottom-nav-icon">◎</span>
       <span class="bottom-nav-label">Search</span>
     </div>
+    <div class="bottom-nav-item" id="bn-workflows" onclick="switchPanel('workflows', null, 'bn-workflows')">
+      <span class="bottom-nav-icon">◆</span>
+      <span class="bottom-nav-label">Workflows</span>
+    </div>
     <div class="bottom-nav-item" id="bn-recent" onclick="switchPanel('recent', null, 'bn-recent')">
       <span class="bottom-nav-icon">◈</span>
       <span class="bottom-nav-label">Recent</span>
-    </div>
-    <div class="bottom-nav-item" id="bn-prompts" onclick="switchPanel('prompts', null, 'bn-prompts')">
-      <span class="bottom-nav-icon">✶</span>
-      <span class="bottom-nav-label">Prompts</span>
     </div>
     <div class="bottom-nav-item" id="bn-more" onclick="toggleSidebar()">
       <span class="bottom-nav-icon">⋯</span>
