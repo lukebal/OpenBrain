@@ -701,8 +701,188 @@
   .workflow-icon { font-size: 20px; margin-bottom: 8px; }
   .workflow-title { font-size: 12px; font-weight: 500; color: var(--text); margin-bottom: 4px; font-family: 'Syne', sans-serif; }
   .workflow-desc { font-size: 11px; color: var(--text3); line-height: 1.5; }
+  /* ── Prompt Cards ── */
+  .prompt-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .prompt-card:hover { border-color: var(--border2); }
+  .prompt-card.open { border-color: rgba(124,106,247,0.35); }
+
+  .prompt-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    gap: 12px;
+  }
+
+  .prompt-card-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  .prompt-badge {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+
+  .prompt-card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+  }
+
+  .prompt-card-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    justify-content: flex-end;
+  }
+
+  .prompt-card-desc {
+    font-size: 11px;
+    color: var(--text3);
+    text-align: right;
+    line-height: 1.4;
+  }
+
+  .prompt-chevron {
+    font-size: 18px;
+    color: var(--text3);
+    transition: transform 0.2s;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+  .prompt-card.open .prompt-chevron,
+  .template-card.open .prompt-chevron { transform: rotate(90deg); }
+
+  .prompt-body {
+    display: none;
+    padding: 0 16px 16px;
+    border-top: 1px solid var(--border);
+  }
+  .prompt-card.open .prompt-body { display: block; }
+
+  .prompt-when {
+    font-size: 11px;
+    color: var(--text3);
+    padding: 10px 0 12px;
+    line-height: 1.5;
+  }
+
+  .prompt-text {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    font-size: 12px;
+    color: var(--text2);
+    line-height: 1.8;
+    white-space: pre-wrap;
+    max-height: 340px;
+    overflow-y: auto;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .prompt-actions {
+    margin-top: 12px;
+    display: flex;
+    gap: 8px;
+  }
+
+  /* ── Template Cards ── */
+  .template-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 10px;
+  }
+
+  .template-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .template-card:hover { border-color: var(--border2); }
+  .template-card.open { border-color: rgba(232,201,122,0.3); }
+
+  .template-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+  }
+
+  .template-icon { font-size: 18px; flex-shrink: 0; }
+
+  .template-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .template-hint {
+    font-size: 10px;
+    color: var(--text3);
+    margin-top: 2px;
+  }
+
+  .template-body {
+    display: none;
+    padding: 0 14px 14px;
+    border-top: 1px solid var(--border);
+  }
+  .template-card.open .template-body { display: block; }
+
+  .template-format {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 12px;
+    color: var(--accent2);
+    font-family: 'DM Mono', monospace;
+    line-height: 1.6;
+    margin-top: 12px;
+  }
+
+  .template-example {
+    margin-top: 10px;
+    font-size: 11px;
+    color: var(--text3);
+    line-height: 1.6;
+    padding: 8px 10px;
+    border-left: 2px solid var(--border2);
+  }
+
+  .template-example-label {
+    display: block;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 4px;
+    opacity: 0.7;
+  }
 </style>
-</head>
 <body>
 
 <div class="shell">
@@ -739,16 +919,14 @@
 
     <div class="sidebar-divider"></div>
 
-    <div class="sidebar-section">
-      <div class="sidebar-label">Tools</div>
-      <div class="nav-item" data-panel="ingest" onclick="switchPanel('ingest', this)">
-        <span class="nav-icon">⇥</span> Ingest Doc
-      </div>
-      <div class="nav-item" data-panel="workflows" onclick="switchPanel('workflows', this)">
+" onclick="switchPanel('workflows', this)">
         <span class="nav-icon">◆</span> Workflows
       </div>
       <div class="nav-item" data-panel="stats" onclick="switchPanel('stats', this)">
         <span class="nav-icon">◉</span> Stats
+      </div>
+      <div class="nav-item" data-panel="prompts" onclick="switchPanel('prompts', this)">
+        <span class="nav-icon">✶</span> Prompts
       </div>
     </div>
 
@@ -1114,6 +1292,200 @@
       </div>
     </div>
 
+    <!-- ── PROMPTS ── -->
+    <div class="panel" id="panel-prompts">
+      <div>
+        <div class="panel-title">Companion <span>prompts</span></div>
+        <div class="panel-sub">Click any card to expand — copy and paste into your AI of choice</div>
+      </div>
+
+      <!-- Section: Full AI Prompts -->
+      <div class="card-title" style="margin-bottom:0; padding:0 2px;">AI Conversation Starters</div>
+
+      <div class="prompt-card" onclick="togglePrompt(this)">
+        <div class="prompt-card-header">
+          <div class="prompt-card-left">
+            <div class="prompt-badge" style="background:rgba(124,106,247,0.15); color:var(--accent2);">one-time</div>
+            <div class="prompt-card-title">Memory Migration</div>
+          </div>
+          <div class="prompt-card-meta">
+            <span class="prompt-card-desc">Extract everything your AI already knows about you → save to Open Brain</span>
+            <span class="prompt-chevron">›</span>
+          </div>
+        </div>
+        <div class="prompt-body">
+          <div class="prompt-when">📌 When to use: Right after setup. Run once per AI platform (Claude, ChatGPT, etc.) that has memory about you.</div>
+          <div class="prompt-text" id="pt-memory"></div>
+          <div class="prompt-actions">
+            <button class="btn btn-primary" onclick="copyPrompt(event,'pt-memory')"><span>⎘</span> Copy prompt</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="prompt-card" onclick="togglePrompt(this)">
+        <div class="prompt-card-header">
+          <div class="prompt-card-left">
+            <div class="prompt-badge" style="background:rgba(124,106,247,0.15); color:var(--accent2);">one-time</div>
+            <div class="prompt-card-title">Second Brain Migration</div>
+          </div>
+          <div class="prompt-card-meta">
+            <span class="prompt-card-desc">Move existing notes from Notion, Obsidian, Apple Notes into Open Brain</span>
+            <span class="prompt-chevron">›</span>
+          </div>
+        </div>
+        <div class="prompt-body">
+          <div class="prompt-when">📌 When to use: After setup, if you have an existing second brain system to bring over.</div>
+          <div class="prompt-text" id="pt-migration"></div>
+          <div class="prompt-actions">
+            <button class="btn btn-primary" onclick="copyPrompt(event,'pt-migration')"><span>⎘</span> Copy prompt</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="prompt-card" onclick="togglePrompt(this)">
+        <div class="prompt-card-header">
+          <div class="prompt-card-left">
+            <div class="prompt-badge" style="background:rgba(232,201,122,0.15); color:var(--gold);">discovery</div>
+            <div class="prompt-card-title">Open Brain Spark</div>
+          </div>
+          <div class="prompt-card-meta">
+            <span class="prompt-card-desc">Personalized use case discovery based on your actual workflow</span>
+            <span class="prompt-chevron">›</span>
+          </div>
+        </div>
+        <div class="prompt-body">
+          <div class="prompt-when">📌 When to use: After setup, when you're wondering "what do I actually capture?" Re-run every few months.</div>
+          <div class="prompt-text" id="pt-spark"></div>
+          <div class="prompt-actions">
+            <button class="btn btn-primary" onclick="copyPrompt(event,'pt-spark')"><span>⎘</span> Copy prompt</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="prompt-card" onclick="togglePrompt(this)">
+        <div class="prompt-card-header">
+          <div class="prompt-card-left">
+            <div class="prompt-badge" style="background:rgba(92,184,138,0.15); color:var(--success);">weekly</div>
+            <div class="prompt-card-title">Weekly Review</div>
+          </div>
+          <div class="prompt-card-meta">
+            <span class="prompt-card-desc">Friday synthesis — surfaces themes, open loops, and connections you missed</span>
+            <span class="prompt-chevron">›</span>
+          </div>
+        </div>
+        <div class="prompt-body">
+          <div class="prompt-when">📌 When to use: Friday afternoon or Sunday evening. Takes 5 minutes. Requires Open Brain MCP connected.</div>
+          <div class="prompt-text" id="pt-weekly"></div>
+          <div class="prompt-actions">
+            <button class="btn btn-primary" onclick="copyPrompt(event,'pt-weekly')"><span>⎘</span> Copy prompt</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section: Capture Templates -->
+      <div class="card-title" style="margin-bottom:0; padding:0 2px; margin-top:8px;">Quick Capture Templates</div>
+      <div class="panel-sub" style="margin-top:-4px; padding:0 2px;">Type these directly into Slack, or say them to any MCP-connected AI</div>
+
+      <div class="template-grid">
+
+        <div class="template-card" onclick="toggleTemplate(this)">
+          <div class="template-header">
+            <span class="template-icon">⚖️</span>
+            <div>
+              <div class="template-title">Decision Capture</div>
+              <div class="template-hint">Decisions with context + owner</div>
+            </div>
+            <span class="prompt-chevron" style="margin-left:auto;">›</span>
+          </div>
+          <div class="template-body">
+            <div class="template-format">Decision: [what was decided]. Context: [why]. Owner: [who].</div>
+            <div class="template-example">
+              <span class="template-example-label">Example</span>
+              Decision: Moving the launch to March 15. Context: QA found three blockers in the payment flow. Owner: Rachel.
+            </div>
+            <button class="btn btn-ghost" style="margin-top:10px; font-size:11px;" onclick="copyTemplate(event, 'Decision: [what was decided]. Context: [why]. Owner: [who].')">⎘ Copy template</button>
+          </div>
+        </div>
+
+        <div class="template-card" onclick="toggleTemplate(this)">
+          <div class="template-header">
+            <span class="template-icon">👤</span>
+            <div>
+              <div class="template-title">Person Note</div>
+              <div class="template-hint">Context on people that matters later</div>
+            </div>
+            <span class="prompt-chevron" style="margin-left:auto;">›</span>
+          </div>
+          <div class="template-body">
+            <div class="template-format">[Name] — [what happened or what you learned about them].</div>
+            <div class="template-example">
+              <span class="template-example-label">Example</span>
+              Marcus — mentioned he's overwhelmed since the reorg. Wants to move to the platform team. His wife just had a baby.
+            </div>
+            <button class="btn btn-ghost" style="margin-top:10px; font-size:11px;" onclick="copyTemplate(event, '[Name] — [what happened or what you learned about them].')">⎘ Copy template</button>
+          </div>
+        </div>
+
+        <div class="template-card" onclick="toggleTemplate(this)">
+          <div class="template-header">
+            <span class="template-icon">💡</span>
+            <div>
+              <div class="template-title">Insight Capture</div>
+              <div class="template-hint">Realizations + what triggered them</div>
+            </div>
+            <span class="prompt-chevron" style="margin-left:auto;">›</span>
+          </div>
+          <div class="template-body">
+            <div class="template-format">Insight: [the thing you realized]. Triggered by: [what made you think of it].</div>
+            <div class="template-example">
+              <span class="template-example-label">Example</span>
+              Insight: Our onboarding flow assumes users already understand permissions. Triggered by: watching a new hire struggle for 20 minutes with role setup.
+            </div>
+            <button class="btn btn-ghost" style="margin-top:10px; font-size:11px;" onclick="copyTemplate(event, 'Insight: [the thing you realized]. Triggered by: [what made you think of it].')">⎘ Copy template</button>
+          </div>
+        </div>
+
+        <div class="template-card" onclick="toggleTemplate(this)">
+          <div class="template-header">
+            <span class="template-icon">🗣️</span>
+            <div>
+              <div class="template-title">Meeting Debrief</div>
+              <div class="template-hint">Key points + action items</div>
+            </div>
+            <span class="prompt-chevron" style="margin-left:auto;">›</span>
+          </div>
+          <div class="template-body">
+            <div class="template-format">Meeting with [who] about [topic]. Key points: [the important stuff]. Action items: [what happens next].</div>
+            <div class="template-example">
+              <span class="template-example-label">Example</span>
+              Meeting with design team about the dashboard redesign. Key points: they want to cut three panels, keep the revenue chart, add a trend line. Action items: I send them the API spec by Thursday, they send revised mocks by Monday.
+            </div>
+            <button class="btn btn-ghost" style="margin-top:10px; font-size:11px;" onclick="copyTemplate(event, 'Meeting with [who] about [topic]. Key points: [the important stuff]. Action items: [what happens next].')">⎘ Copy template</button>
+          </div>
+        </div>
+
+        <div class="template-card" onclick="toggleTemplate(this)">
+          <div class="template-header">
+            <span class="template-icon">🤖</span>
+            <div>
+              <div class="template-title">The AI Save</div>
+              <div class="template-hint">Save good AI output before it's gone</div>
+            </div>
+            <span class="prompt-chevron" style="margin-left:auto;">›</span>
+          </div>
+          <div class="template-body">
+            <div class="template-format">Saving from [AI tool]: [the key takeaway or output worth keeping].</div>
+            <div class="template-example">
+              <span class="template-example-label">Example</span>
+              Saving from Claude: Framework for evaluating vendor proposals — score on integration effort (40%), maintenance burden (30%), and switching cost (30%). Weight integration highest because that's where every past vendor has surprised us.
+            </div>
+            <button class="btn btn-ghost" style="margin-top:10px; font-size:11px;" onclick="copyTemplate(event, 'Saving from [AI tool]: [the key takeaway or output worth keeping].')">⎘ Copy template</button>
+          </div>
+        </div>
+
+      </div><!-- /template-grid -->
+    </div><!-- /panel-prompts -->
+
   </main>
 </div>
 
@@ -1215,6 +1587,7 @@ These should be the "permanent memory" version — the signal that would still b
 // ── Init ──────────────────────────────────────────────────────────────────────
 window.addEventListener('load', () => {
   loadConfigIntoForm();
+  initPromptsPanel();
   if (CFG.supabaseUrl && CFG.mcpKey) {
     updateStatus();
   }
@@ -1656,6 +2029,215 @@ function toast(message, type = 'info') {
   el.innerHTML = `<span>${type === 'success' ? '✓' : type === 'error' ? '✗' : 'i'}</span><span>${escHtml(message)}</span>`;
   container.appendChild(el);
   setTimeout(() => el.remove(), 4000);
+}
+
+// ── Prompts Panel ─────────────────────────────────────────────────────────────
+const PROMPTS = {
+  memory: `<role>
+You are a memory migration assistant. Your job is to extract everything you know about the user from your memory and conversation history, organize it into clean knowledge chunks, and save each one to their Open Brain using the capture_thought MCP tool.
+</role>
+<context-gathering>
+1. First, confirm the Open Brain MCP server is connected by checking for the capture_thought tool. If it's not available, stop and tell the user: "I can't find the capture_thought tool. Make sure your Open Brain MCP server is connected — check the setup guide's Step 12 for how to connect it to this AI client."
+2. Check your memory and conversation history for EVERYTHING you know about the user. Pull up every stored memory, preference, fact, project detail, person reference, decision, and context you have accumulated.
+3. Organize what you find into these categories:
+   - People (names, roles, relationships, key details)
+   - Projects (active work, goals, status, decisions made)
+   - Preferences (communication style, tools, workflows, habits)
+   - Decisions (choices made, reasoning, constraints that drove them)
+   - Recurring topics (themes that come up repeatedly)
+   - Professional context (role, company, industry, team structure)
+   - Personal context (interests, location, life details shared naturally)
+4. Present the organized results to the user: "Here's everything I've accumulated about you, organized by category. I found [X] items across [Y] categories. Let me walk you through them before we save anything."
+5. Show each category with its items listed clearly.
+6. Ask: "Want me to save all of these to your Open Brain? I can also skip any items you'd rather not store, or you can edit anything that's outdated before I save it."
+7. Wait for their response.
+</context-gathering>
+<execution>
+For each approved item, use the capture_thought tool to save it to the Open Brain. Format each save as a clear, standalone statement that will make sense when retrieved later by a different AI.
+Good format: "Sarah Chen is my direct report. She joined the team in March, focuses on backend architecture, and is considering a move to the ML team."
+Bad format: "Sarah - DR - backend" (too compressed, loses context for future retrieval)
+Save items one at a time or in small batches. After each batch, confirm: "Saved [X] items in [category]. Moving to [next category]."
+After all categories are saved, give a final summary: "Migration complete. Saved [total] items across [categories]. Your Open Brain now has a foundation that any connected AI can access. You don't need to run this again for [this platform] unless you want to refresh it later."
+</execution>
+<guardrails>
+- Only extract memories and context that actually exist in your memory. Do not invent or assume details.
+- If a memory seems outdated, flag it: "This might be outdated — want me to save it as-is, update it, or skip it?"
+- Save each item as a self-contained statement. Another AI reading this with zero prior context should understand what it means.
+- If the capture_thought tool isn't working or returns errors, stop and tell the user what's happening so they can troubleshoot. Don't silently skip items.
+</guardrails>`,
+
+  migration: `<role>
+You are a second brain migration assistant. Your job is to help the user move their existing notes, captures, and knowledge from another system into their Open Brain. You handle the messy reality of different export formats — Notion pages, Obsidian markdown, CSV exports, n8n logs, plain text dumps, whatever they have — and transform each piece into a clean, standalone thought that the Open Brain can embed and search effectively.
+</role>
+<context-gathering>
+1. First, confirm the Open Brain MCP server is connected by checking for the capture_thought tool. If it's not available, stop and tell the user: "I can't find the capture_thought tool. Make sure your Open Brain MCP server is connected — check the setup guide's Step 12 for how to connect it to this AI client."
+2. Ask: "What system are you migrating from? Tell me what you've been using — Notion, Obsidian, Apple Notes, a Telegram bot, n8n workflows, text files, or something else. If it's a combination, list them all."
+3. Wait for their response.
+4. Based on their system, give them specific export instructions:
+   Notion: "Go to Settings → Export all workspace content → choose Markdown & CSV. Unzip the downloaded file. You can paste the contents of individual pages here, or if you have a lot, paste them in batches. Focus on pages that have your actual thinking — skip template pages, empty databases, and structural pages."
+   Obsidian: "Open your vault folder in Finder/Explorer. Your notes are markdown files. You can paste them here directly. Start with your most-used notes — daily notes, MOCs (Maps of Content), or whatever holds your real thinking."
+   Apple Notes: "Apple Notes doesn't have a great export. The fastest path: open each note you want to migrate, Select All, Copy, and paste it here. Start with the notes you actually reference — skip shopping lists and quick reminders unless you want those in your brain too."
+   n8n/Zapier/automation captures: "If your automation stored data in a spreadsheet, database, or Notion, export that. CSV is ideal — paste the contents here."
+   Multiple systems: "Let's do one system at a time. Which one has the most content you care about? We'll start there."
+5. Ask: "Before we start: is there anything you want to skip? Categories, date ranges, or types of notes you don't need in the Open Brain?"
+6. Wait for their response.
+</context-gathering>
+<processing>
+When the user pastes content, process it in these steps:
+1. Parse the format — identify what you're looking at (Notion markdown, Obsidian, CSV, plain text, etc.)
+2. Break into logical chunks — each chunk should be one self-contained thought, decision, note, or piece of context
+3. Transform each chunk into a standalone statement — make it readable with zero context about the original system; preserve dates, people, and meaning; drop formatting artifacts
+4. Present a preview batch: "Here's how I'd save these. Check that the meaning is right and nothing important got lost. Once you approve, I'll save these and keep going."
+5. Wait for approval or corrections.
+</processing>
+<execution>
+For each approved batch, use the capture_thought tool to save each chunk individually to the Open Brain.
+After each batch:
+- Confirm: "Saved [X] thoughts. [Y] remaining in this paste."
+- If there's more content, continue automatically.
+- If waiting for more content, ask: "Ready for the next batch? Paste more content whenever you're ready."
+Pacing: Save 5-10 thoughts at a time, confirming between batches. If the user says "just save them all," you can increase batch size — but still confirm every 20-25 saves.
+After all content from one system is migrated, ask: "Any other systems to migrate, or are we done?"
+</execution>
+<guardrails>
+- Never invent content. If a note is ambiguous, save what's clearly there and flag what's unclear.
+- Preserve dates when present. Preserve people's names.
+- If the user pastes 50+ notes, warn them about API costs before proceeding.
+- Don't save empty, structural, or template content.
+- If capture_thought returns errors, stop and report. Don't silently skip thoughts.
+- Make clear this is a copy, not a move: "Your [system] data stays where it is."
+</guardrails>`,
+
+  spark: `<role>
+You are a workflow analyst who helps people discover how a personal knowledge system fits into their actual life. You don't pitch features. You listen to how someone works, identify where context gets lost, and show them exactly what to capture and why. Be direct, practical, and specific to their situation.
+</role>
+<context-gathering>
+1. Before asking anything, check your memory and conversation history for context about the user's role, tools, workflow, team, and habits. If you find relevant context, confirm it: "Based on what I know about you, you work as [role], use [tools], and your team includes [people]. Is that still accurate? I'll use this to personalize my recommendations." Then only ask about what's missing.
+2. Ask: "Walk me through a typical workday. What tools do you open, what kind of work fills your time, and where do things get messy or repetitive?"
+3. Wait for their response.
+4. Ask: "When you start a new conversation with an AI, what do you find yourself re-explaining most often? The stuff you wish it just knew already."
+5. Wait for their response.
+6. Ask: "Think about the last month. What's something you forgot — a decision, a detail from a meeting, something someone told you — that cost you time or quality when you needed it later?"
+7. Wait for their response.
+8. Ask: "Who are the key people in your work life right now? Direct reports, collaborators, clients, stakeholders — whoever you interact with regularly where remembering context matters."
+9. Wait for their response.
+10. Once you have their workflow, re-explanation patterns, memory gaps, and key people, move to analysis.
+</context-gathering>
+<analysis>
+Using everything gathered, generate personalized Open Brain use cases across these five patterns:
+Pattern 1 — "Save This": moments where AI produces something worth keeping
+Pattern 2 — "Before I Forget": moments where information is fresh but will decay (post-meeting, phone calls, ideas triggered by reading)
+Pattern 3 — "Cross-Pollinate": moments where they're in one AI tool but need context from another part of their life
+Pattern 4 — "Build the Thread": topics where daily captures would compound into something more valuable than any single note
+Pattern 5 — "People Context": details about their key people that would be valuable to capture and recall
+For each pattern, generate 4-5 use cases written as specific scenarios from THEIR workflow, not generic examples.
+</analysis>
+<output-format>
+## Your Open Brain Use Cases
+### Save This (Preserving What AI Helps You Create)
+[4-5 specific scenarios from their workflow, each with an example capture sentence]
+### Before I Forget (Capturing While It's Fresh)
+[4-5 specific scenarios, each with example capture]
+### Cross-Pollinate (Searching Across Your Tools)
+[4-5 specific scenarios showing what they'd ask and when]
+### Build the Thread (Compounding Over Time)
+[3-4 topics from their workflow where ongoing captures would compound]
+### People Context (Remembering What Matters)
+[3-4 specific examples based on their key people, with example captures]
+## Your Daily Rhythm
+[Suggest 3-4 natural capture moments in their described workday]
+## Your First 5 Captures
+[Give them 5 specific things to capture RIGHT NOW based on the conversation]
+</output-format>
+<guardrails>
+- Every use case must be specific to their described workflow. No generic examples.
+- Example captures should be realistic — the kind of thing a person would actually type quickly.
+- If their workflow doesn't naturally fit a pattern, skip it instead of forcing it.
+- The "First 5 Captures" must be things they could do immediately after this conversation.
+</guardrails>`,
+
+  weekly: `<role>
+You are a personal knowledge analyst who reviews a week's worth of captured thoughts and surfaces what matters. You look for patterns the user wouldn't notice in the daily flow, flag things that are falling through the cracks, and connect dots across different areas of their life and work. Be direct and specific. No filler observations.
+</role>
+<context-gathering>
+1. Before asking anything, check your memory and conversation history for context about the user's role, current priorities, and active projects. Note it for weighting the analysis.
+2. Use the Open Brain MCP tools to retrieve all thoughts captured in the last 7 days. Pull them with the list_thoughts tool filtered to the last 7 days, and also run a search for any action items.
+3. If fewer than 3 thoughts are found, tell the user: "Your brain only has [X] captures from this week. The weekly review gets more useful with more data — even quick one-line captures add up. Want to do a quick brain dump right now before I run the review?"
+4. If the retrieval works, ask: "I found [X] captures from this week. Before I analyze them, is there anything specific you're focused on right now that I should weight more heavily?"
+5. Wait for their response (proceed if they say nothing specific).
+</context-gathering>
+<analysis>
+Using the retrieved thoughts:
+1. Cluster by topic — group related captures and identify the 3-5 themes that dominated the week
+2. Scan for unresolved action items — anything captured as a task or action item that doesn't have a corresponding completion note
+3. People analysis — who showed up most in captures? Any relationship context worth noting?
+4. Pattern detection — compare against previous weeks if available. What's growing? What's new? What dropped off?
+5. Connection mapping — find non-obvious links between captures from different days or contexts
+6. Gap analysis — based on the user's role and priorities, what's conspicuously absent?
+</analysis>
+<output-format>
+## Week at a Glance
+[X] thoughts captured | Top themes: [theme 1], [theme 2], [theme 3]
+## This Week's Themes
+For each theme (3-5):
+**[Theme name]** ([X] captures)
+[2-3 sentence synthesis of what emerged — not a summary of each capture, a synthesis of the overall picture]
+## Open Loops
+[List any action items, decisions pending, or follow-ups that appear unresolved. Note when captured and original context.]
+## Connections You Might Have Missed
+[2-3 non-obvious links between captures from different days or contexts. "On Tuesday you noted X, and on Thursday you captured Y — these might be related because..."]
+## Gaps
+[1-2 observations about what's absent. Frame as opportunity, not failure.]
+## Suggested Focus for Next Week
+[Based on themes, open loops, and gaps — 2-3 specific things to pay attention to or capture more deliberately next week.]
+</output-format>
+<guardrails>
+- Only analyze thoughts that actually exist in the brain. Do not invent or assume captures.
+- Connections must be genuine, not forced. If there are none, say so.
+- Gap analysis should be useful, not guilt-inducing.
+- Keep the entire review scannable in under 2 minutes.
+</guardrails>`
+};
+
+function initPromptsPanel() {
+  const els = ['pt-memory','pt-migration','pt-spark','pt-weekly'];
+  const keys = ['memory','migration','spark','weekly'];
+  els.forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = PROMPTS[keys[i]];
+  });
+}
+
+function togglePrompt(card) {
+  const isOpen = card.classList.contains('open');
+  // Close all other prompt cards
+  document.querySelectorAll('.prompt-card.open').forEach(c => c.classList.remove('open'));
+  if (!isOpen) card.classList.add('open');
+}
+
+function toggleTemplate(card) {
+  const isOpen = card.classList.contains('open');
+  card.classList.toggle('open', !isOpen);
+}
+
+function copyPrompt(event, textElId) {
+  event.stopPropagation();
+  const el = document.getElementById(textElId);
+  if (!el) return;
+  navigator.clipboard.writeText(el.textContent).then(() => {
+    toast('Prompt copied to clipboard', 'success');
+  }).catch(() => {
+    toast('Copy failed — try selecting and copying manually', 'error');
+  });
+}
+
+function copyTemplate(event, text) {
+  event.stopPropagation();
+  navigator.clipboard.writeText(text).then(() => {
+    toast('Template copied to clipboard', 'success');
+  }).catch(() => {
+    toast('Copy failed', 'error');
+  });
 }
 
 // ── Util ──────────────────────────────────────────────────────────────────────
